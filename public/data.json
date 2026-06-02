@@ -1,0 +1,14 @@
+{
+  "gallery": [
+    {
+      "id": "1",
+      "type": "image",
+      "category": "life",
+      "url": "/picture/sample.jpg",
+      "title": "Welcome to my Gallery",
+      "description": "This is an example image. You can edit this in the admin panel.",
+      "date": "2026-06-02",
+      "location": "Taipei"
+    }
+  ]
+}
