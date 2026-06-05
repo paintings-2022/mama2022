@@ -7,6 +7,7 @@ const EDIT_MODE_ENABLED = import.meta.env.DEV;
 function Gallery({ data, onSave }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeCategory, setActiveCategory] = useState('painting');
+  const [activeSubcategory, setActiveSubcategory] = useState('all');
   const [visibleCount, setVisibleCount] = useState(20);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const audioRef = useRef(null);
@@ -33,6 +34,7 @@ function Gallery({ data, onSave }) {
 
   const handleCategoryChange = (cat) => {
     setActiveCategory(cat);
+    setActiveSubcategory('all');
     setVisibleCount(20);
   };
 
@@ -48,15 +50,16 @@ function Gallery({ data, onSave }) {
     setIsZoomed(false);
   };
 
-  const currentIndex = selectedItem ? data.gallery.filter(item => {
-    if (activeCategory === 'all') return item.isLiked;
-    return item.isLiked && (item.category === activeCategory || (!item.category && activeCategory === 'life'));
-  }).findIndex(i => i.id === selectedItem.id) : -1;
-
-  const filteredGallery = data.gallery.filter(item => {
+  const currentMainFilteredGallery = data.gallery.filter(item => {
     if (activeCategory === 'all') return item.isLiked;
     return item.isLiked && (item.category === activeCategory || (!item.category && activeCategory === 'life'));
   });
+
+  const availableSubcategories = [...new Set(currentMainFilteredGallery.filter(i => i.subcategory).map(i => i.subcategory))];
+
+  const filteredGallery = currentMainFilteredGallery.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+
+  const currentIndex = selectedItem ? filteredGallery.findIndex(i => i.id === selectedItem.id) : -1;
 
   const navigateModal = (direction, e) => {
     e.stopPropagation();
@@ -216,29 +219,51 @@ function Gallery({ data, onSave }) {
     <div className="gallery-container">
       <audio ref={audioRef} loop src={musicUrl} />
       <div className="filters" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          <button className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => handleCategoryChange('all')}>全部照片</button>
-          <button className={`filter-btn ${activeCategory === 'life' ? 'active' : ''}`} onClick={() => handleCategoryChange('life')}>生活照片</button>
-          <button className={`filter-btn ${activeCategory === 'painting' ? 'active' : ''}`} onClick={() => handleCategoryChange('painting')}>畫畫照片</button>
-          <button 
-            className="filter-btn" 
-            onClick={toggleAudio}
-            style={{ margin: 0, padding: '0.4rem 1rem', background: isPlayingMusic ? 'var(--primary-color)' : 'transparent', color: isPlayingMusic ? 'white' : 'var(--text-color)', border: '1px solid var(--primary-color)' }}
-          >
-            {isPlayingMusic ? '⏸️ 暫停音樂' : '🎵 播放背景音樂'}
-          </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => handleCategoryChange('all')}>全部照片</button>
+            <button className={`filter-btn ${activeCategory === 'life' ? 'active' : ''}`} onClick={() => handleCategoryChange('life')}>生活照片</button>
+            <button className={`filter-btn ${activeCategory === 'painting' ? 'active' : ''}`} onClick={() => handleCategoryChange('painting')}>畫畫照片</button>
+            <button 
+              className="filter-btn" 
+              onClick={toggleAudio}
+              style={{ margin: 0, padding: '0.4rem 1rem', background: isPlayingMusic ? 'var(--primary-color)' : 'transparent', color: isPlayingMusic ? 'white' : 'var(--text-color)', border: '1px solid var(--primary-color)' }}
+            >
+              {isPlayingMusic ? '⏸️ 暫停音樂' : '🎵 播放背景音樂'}
+            </button>
+          </div>
+          
+          {availableSubcategories.length > 0 && (
+            <div className="filters sub-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.3rem 0.5rem', background: 'var(--card-bg)', borderRadius: '20px', border: '1px solid var(--card-border)', width: 'fit-content' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', alignSelf: 'center', marginLeft: '0.5rem', marginRight: '0.5rem' }}>小分類：</span>
+              <button 
+                className={`filter-btn ${activeSubcategory === 'all' ? 'active' : ''}`} 
+                style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} 
+                onClick={() => { setActiveSubcategory('all'); setVisibleCount(20); }}
+              >全部</button>
+              {availableSubcategories.map(sub => (
+                <button 
+                  key={sub}
+                  className={`filter-btn ${activeSubcategory === sub ? 'active' : ''}`} 
+                  style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} 
+                  onClick={() => { setActiveSubcategory(sub); setVisibleCount(20); }}
+                >{sub}</button>
+              ))}
+            </div>
+          )}
         </div>
+
         <div style={{ display: 'flex', gap: '0.5rem', background: 'var(--card-bg)', padding: '0.3rem', borderRadius: '20px', border: '1px solid var(--card-border)' }}>
           <button 
             className="filter-btn" 
-            style={{ margin: 0, padding: '0.4rem 1rem', background: viewMode === 'grid' ? 'var(--primary-color)' : 'transparent', color: viewMode === 'grid' ? 'white' : 'var(--text-color)' }}
+            style={{ margin: 0, padding: '0.4rem 1rem', background: viewMode === 'grid' ? 'var(--primary-color)' : 'transparent', color: viewMode === 'grid' ? 'white' : 'var(--text-color)', border: 'none' }}
             onClick={() => setViewMode('grid')}
           >
             🔲 格子
           </button>
           <button 
             className="filter-btn" 
-            style={{ margin: 0, padding: '0.4rem 1rem', background: viewMode === 'timeline' ? 'var(--primary-color)' : 'transparent', color: viewMode === 'timeline' ? 'white' : 'var(--text-color)' }}
+            style={{ margin: 0, padding: '0.4rem 1rem', background: viewMode === 'timeline' ? 'var(--primary-color)' : 'transparent', color: viewMode === 'timeline' ? 'white' : 'var(--text-color)', border: 'none' }}
             onClick={() => setViewMode('timeline')}
           >
             ⏳ 時間軸

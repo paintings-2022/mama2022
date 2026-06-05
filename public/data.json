@@ -1,7 +1,4 @@
 {
-  "settings": {
-    "backgroundMusic": "/music/Debussy_Clair_de_Lune.mp3"
-  },
   "gallery": [
     {
       "id": "2",
@@ -45,7 +42,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "102",
@@ -56,7 +54,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "103",
@@ -67,7 +66,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "104",
@@ -78,7 +78,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "105",
@@ -89,7 +90,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "106",
@@ -100,7 +102,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "107",
@@ -111,7 +114,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "108",
@@ -122,7 +126,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "109",
@@ -133,7 +138,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "110",
@@ -144,7 +150,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "111",
@@ -155,7 +162,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "112",
@@ -166,7 +174,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "113",
@@ -177,7 +186,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "114",
@@ -188,7 +198,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "115",
@@ -199,7 +210,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "116",
@@ -210,7 +222,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "117",
@@ -221,7 +234,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "118",
@@ -232,7 +246,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "119",
@@ -243,7 +258,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "120",
@@ -254,7 +270,8 @@
       "description": "painting 照片",
       "date": "2022-08-16",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "121",
@@ -265,7 +282,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "122",
@@ -276,7 +294,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "123",
@@ -287,7 +306,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "124",
@@ -298,7 +318,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "125",
@@ -309,7 +330,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "126",
@@ -320,7 +342,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "127",
@@ -331,7 +354,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "128",
@@ -342,7 +366,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "129",
@@ -353,7 +378,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "130",
@@ -364,7 +390,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "131",
@@ -375,7 +402,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "132",
@@ -386,7 +414,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "133",
@@ -397,7 +426,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "134",
@@ -408,7 +438,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "135",
@@ -419,7 +450,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "136",
@@ -430,7 +462,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "137",
@@ -441,7 +474,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "138",
@@ -452,7 +486,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "139",
@@ -463,7 +498,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "140",
@@ -474,7 +510,8 @@
       "description": "painting 照片",
       "date": "2022-08-17",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "141",
@@ -485,7 +522,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "142",
@@ -496,7 +534,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "143",
@@ -507,7 +546,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "144",
@@ -518,7 +558,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "145",
@@ -529,7 +570,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "146",
@@ -540,7 +582,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "147",
@@ -551,7 +594,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "148",
@@ -562,7 +606,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "149",
@@ -573,7 +618,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "150",
@@ -584,7 +630,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "151",
@@ -595,7 +642,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "152",
@@ -606,7 +654,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "153",
@@ -617,7 +666,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "154",
@@ -628,7 +678,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "155",
@@ -639,7 +690,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "156",
@@ -650,7 +702,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "157",
@@ -661,7 +714,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "158",
@@ -672,7 +726,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "159",
@@ -683,7 +738,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "160",
@@ -694,7 +750,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "161",
@@ -705,7 +762,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "162",
@@ -716,7 +774,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "163",
@@ -727,7 +786,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "164",
@@ -738,7 +798,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "165",
@@ -749,7 +810,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "166",
@@ -760,7 +822,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "167",
@@ -771,7 +834,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "168",
@@ -782,7 +846,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "169",
@@ -793,7 +858,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "170",
@@ -804,7 +870,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "171",
@@ -815,7 +882,8 @@
       "description": "painting 照片",
       "date": "2022-08-18",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "172",
@@ -826,7 +894,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "173",
@@ -837,7 +906,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "174",
@@ -848,7 +918,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "175",
@@ -859,7 +930,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "176",
@@ -870,7 +942,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "177",
@@ -881,7 +954,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "178",
@@ -892,7 +966,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "179",
@@ -903,7 +978,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "180",
@@ -914,7 +990,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "181",
@@ -925,7 +1002,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "182",
@@ -936,7 +1014,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "183",
@@ -947,7 +1026,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "184",
@@ -958,7 +1038,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "185",
@@ -969,7 +1050,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "186",
@@ -980,7 +1062,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "187",
@@ -991,7 +1074,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "188",
@@ -1002,7 +1086,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "189",
@@ -1013,7 +1098,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "190",
@@ -1024,7 +1110,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "191",
@@ -1035,7 +1122,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "192",
@@ -1046,7 +1134,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "193",
@@ -1057,7 +1146,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "194",
@@ -1068,7 +1158,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "195",
@@ -1079,7 +1170,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "196",
@@ -1090,7 +1182,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "197",
@@ -1101,7 +1194,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "198",
@@ -1112,7 +1206,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "199",
@@ -1123,7 +1218,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "200",
@@ -1134,7 +1230,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "201",
@@ -1145,7 +1242,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "202",
@@ -1156,7 +1254,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "203",
@@ -1167,7 +1266,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "204",
@@ -1178,7 +1278,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "205",
@@ -1189,7 +1290,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "206",
@@ -1200,7 +1302,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "207",
@@ -1211,7 +1314,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "208",
@@ -1222,7 +1326,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "209",
@@ -1233,7 +1338,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "210",
@@ -1244,7 +1350,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "211",
@@ -1255,7 +1362,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "212",
@@ -1266,7 +1374,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "213",
@@ -1277,7 +1386,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "214",
@@ -1288,7 +1398,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "215",
@@ -1299,7 +1410,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直2"
     },
     {
       "id": "216",
@@ -1310,7 +1422,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫1"
     },
     {
       "id": "217",
@@ -1321,7 +1434,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "直1"
     },
     {
       "id": "218",
@@ -1332,7 +1446,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "219",
@@ -1343,7 +1458,8 @@
       "description": "painting 照片",
       "date": "2022-09-04",
       "location": "板橋",
-      "isLiked": true
+      "isLiked": true,
+      "subcategory": "橫2"
     },
     {
       "id": "220",
@@ -4040,5 +4156,14 @@
       "location": "",
       "isLiked": true
     }
-  ]
+  ],
+  "settings": {
+    "backgroundMusic": "/music/Debussy_Clair_de_Lune.mp3",
+    "subcategories": [
+      "直1",
+      "直2",
+      "橫1",
+      "橫2"
+    ]
+  }
 }

@@ -17,8 +17,19 @@ const EyeOffIcon = () => (
 function Admin({ data, onSave }) {
   const [items, setItems] = useState(data.gallery || []);
   const [editingItem, setEditingItem] = useState(null);
+  const [previewItem, setPreviewItem] = useState(null);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: '50%', y: '50%' });
   const [activeCategory, setActiveCategory] = useState('painting');
+  const [activeSubcategory, setActiveSubcategory] = useState('all');
+  const [subcategories, setSubcategories] = useState(data.settings?.subcategories || ['直1', '直2', '橫1', '橫2']);
+  const [isManagingCategories, setIsManagingCategories] = useState(false);
+  const [newSubcategoryName, setNewSubcategoryName] = useState('');
+  const [editingSubcategory, setEditingSubcategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [draggedItemIndex, setDraggedItemIndex] = useState(null);
   const itemsPerPage = 20;
 
   if (import.meta.env.PROD) {
@@ -39,7 +50,8 @@ function Admin({ data, onSave }) {
   }, [data]);
 
   const handleSaveAll = () => {
-    onSave({ gallery: items });
+    onSave({ gallery: items, settings: { ...data.settings, subcategories } });
+    setHasUnsavedChanges(false);
   };
 
   const handleDelete = (id) => {
@@ -73,6 +85,47 @@ function Admin({ data, onSave }) {
 
   const toggleLike = (id) => {
     setItems(items.map(item => item.id === id ? { ...item, isLiked: !item.isLiked } : item));
+    setHasUnsavedChanges(true);
+  };
+
+  const handleInlineChange = (id, field, value) => {
+    setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
+    setHasUnsavedChanges(true);
+  };
+
+  const handleDragStart = (e, item) => {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('application/json', JSON.stringify({ id: item.id }));
+    setDraggedItemIndex(item.id);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, targetItem) => {
+    e.preventDefault();
+    setDraggedItemIndex(null);
+    const dataTransfer = e.dataTransfer.getData('application/json');
+    if (!dataTransfer) return;
+    try {
+      const { id: sourceId } = JSON.parse(dataTransfer);
+      if (sourceId === targetItem.id) return;
+      
+      const newItems = [...items];
+      const sourceIndex = newItems.findIndex(i => i.id === sourceId);
+      const targetIndex = newItems.findIndex(i => i.id === targetItem.id);
+      
+      if (sourceIndex === -1 || targetIndex === -1) return;
+      
+      const [movedItem] = newItems.splice(sourceIndex, 1);
+      newItems.splice(targetIndex, 0, movedItem);
+      
+      setItems(newItems);
+      setHasUnsavedChanges(true);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const moveItem = (item, direction) => {
@@ -113,6 +166,7 @@ function Admin({ data, onSave }) {
       }
       
       setItems(newItems);
+      setHasUnsavedChanges(true);
       
       // Auto-follow across pages
       const newPage = Math.floor(targetFilteredIndex / itemsPerPage) + 1;
@@ -122,37 +176,149 @@ function Admin({ data, onSave }) {
     }
   };
 
-  const startEdit = (item) => {
-    setEditingItem({ ...item });
+  const handleZoomMove = (e) => {
+    if (!isZoomed) return;
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPos({ x: `${x}%`, y: `${y}%` });
   };
 
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setEditingItem(prev => ({ ...prev, [name]: value }));
-  };
-
-  const saveEdit = (e) => {
-    e.preventDefault();
+  const saveEdit = (e, shouldClose = true) => {
+    if (e && e.preventDefault) e.preventDefault();
+    let newItems;
     if (editingItem.id) {
-      // Update existing
-      setItems(items.map(i => i.id === editingItem.id ? editingItem : i));
+      newItems = items.map(i => i.id === editingItem.id ? editingItem : i);
     } else {
-      // Add new
       const newItem = { ...editingItem, id: Date.now().toString() };
-      setItems([newItem, ...items]);
+      newItems = [newItem, ...items];
     }
-    setEditingItem(null);
+    setItems(newItems);
+    setIsDirty(false);
+    if (shouldClose) {
+      setEditingItem(null);
+    }
+    if (onSave) onSave({ ...data, gallery: newItems, settings: { ...data.settings, subcategories } });
+  };
+
+  const saveSubcategories = (newSubcats, newItems = items) => {
+    setSubcategories(newSubcats);
+    if (onSave) onSave({ ...data, gallery: newItems, settings: { ...data.settings, subcategories: newSubcats } });
+  };
+
+  const handleAddSubcategory = () => {
+    if (!newSubcategoryName.trim()) return;
+    if (subcategories.includes(newSubcategoryName.trim())) {
+      alert('分類名稱已存在！');
+      return;
+    }
+    saveSubcategories([...subcategories, newSubcategoryName.trim()]);
+    setNewSubcategoryName('');
+  };
+
+  const handleDeleteSubcategory = (name) => {
+    if (!window.confirm(`確定要刪除分類「${name}」嗎？這不會刪除照片，但會清除這些照片的分類標籤。`)) return;
+    const newItems = items.map(i => i.subcategory === name ? { ...i, subcategory: '' } : i);
+    setItems(newItems);
+    saveSubcategories(subcategories.filter(s => s !== name), newItems);
+    if (activeSubcategory === name) setActiveSubcategory('all');
+  };
+
+  const handleRenameSubcategory = () => {
+    if (!editingSubcategory.newName.trim() || editingSubcategory.oldName === editingSubcategory.newName) {
+      setEditingSubcategory(null);
+      return;
+    }
+    if (subcategories.includes(editingSubcategory.newName.trim())) {
+      alert('分類名稱已存在！');
+      return;
+    }
+    const newName = editingSubcategory.newName.trim();
+    const oldName = editingSubcategory.oldName;
+    const newItems = items.map(i => i.subcategory === oldName ? { ...i, subcategory: newName } : i);
+    setItems(newItems);
+    const newSubcats = subcategories.map(s => s === oldName ? newName : s);
+    saveSubcategories(newSubcats, newItems);
+    setEditingSubcategory(null);
+    if (activeSubcategory === oldName) setActiveSubcategory(newName);
+  };
+
+  const navigateEdit = (direction, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!editingItem) return;
+
+    if (isDirty) {
+      const confirmSave = window.confirm('您有尚未儲存的變更，請問要先儲存嗎？\n\n點「確定」儲存並前往下一張\n點「取消」留在原地繼續編輯');
+      if (confirmSave) {
+        saveEdit(null, false); // save but don't close yet
+      } else {
+        return; // stay
+      }
+    }
+
+    const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
+    const currentFilteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+    const currentIndex = currentFilteredItems.findIndex(i => i.id === editingItem.id);
+    if (currentIndex === -1) return; // cannot navigate if new unsaved item
+    
+    let newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+    if (newIndex < 0) newIndex = currentFilteredItems.length - 1;
+    if (newIndex >= currentFilteredItems.length) newIndex = 0;
+
+    setEditingItem({ ...currentFilteredItems[newIndex] });
+    setIsDirty(false);
+    setIsZoomed(false);
+  };
+
+  const navigatePreview = (direction, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!previewItem) return;
+    
+    const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
+    const currentFilteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+    const currentIndex = currentFilteredItems.findIndex(i => i.id === previewItem.id);
+    if (currentIndex === -1) return;
+    
+    let newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+    if (newIndex < 0) newIndex = currentFilteredItems.length - 1;
+    if (newIndex >= currentFilteredItems.length) newIndex = 0;
+
+    setPreviewItem({ ...currentFilteredItems[newIndex] });
+    setIsZoomed(false);
   };
 
   const cancelEdit = () => {
+    if (isDirty) {
+      if (!window.confirm('您有未儲存的變更，確定要放棄修改並離開嗎？')) {
+        return;
+      }
+    }
     setEditingItem(null);
+    setIsDirty(false);
+    setIsZoomed(false);
+  };
+
+  const startEdit = (item) => {
+    setEditingItem({ ...item });
+    setIsDirty(false);
+    setIsZoomed(false);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setEditingItem(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+    setIsDirty(true);
   };
 
   const addNew = () => {
     setEditingItem({
       id: '',
       type: 'image',
-      category: 'life',
+      category: activeCategory === 'all' ? 'life' : activeCategory,
+      subcategory: activeSubcategory === 'all' ? '' : activeSubcategory,
       url: '/picture/new.jpg',
       title: '',
       description: '',
@@ -160,112 +326,393 @@ function Admin({ data, onSave }) {
       location: '',
       isLiked: false
     });
+    setIsDirty(true);
+    setIsZoomed(false);
   };
 
-  if (editingItem) {
+  if (previewItem) {
+    const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
+    const currentFilteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
     return (
-      <div className="admin-container">
-        <div className="login-box glass" style={{ maxWidth: '600px' }}>
-          <h2>{editingItem.id ? 'Edit Item' : 'Add New Item'}</h2>
-          <form onSubmit={saveEdit}>
-            <div className="form-group" style={{ display: 'flex', gap: '1rem' }}>
-              <div style={{ flex: 1 }}>
-                <label>Type</label>
-                <select name="type" value={editingItem.type} onChange={handleEditChange} className="form-control">
-                  <option value="image">Image</option>
-                  <option value="video">Video</option>
-                </select>
-              </div>
-              <div style={{ flex: 1 }}>
-                <label>Category</label>
-                <select name="category" value={editingItem.category || 'life'} onChange={handleEditChange} className="form-control">
-                  <option value="life">生活照片</option>
-                  <option value="painting">畫畫照片</option>
-                </select>
-              </div>
+      <div className="admin-container" style={{ margin: 0, padding: 0 }}>
+        <div className="modal-backdrop" style={{ background: 'rgba(0,0,0,0.9)' }} onClick={() => { setPreviewItem(null); setIsZoomed(false); }}>
+          <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', background: 'transparent', boxShadow: 'none', border: 'none' }}>
+            <div className="modal-media" style={{ flex: '1', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', padding: 0 }}>
+              <button className="close-btn" style={{ top: '1rem', right: '2rem', color: 'white', zIndex: 50, background: 'rgba(255,255,255,0.2)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', border: '1px solid rgba(255,255,255,0.5)' }} onClick={() => { setPreviewItem(null); setIsZoomed(false); }}>&times;</button>
+              
+              {currentFilteredItems.length > 1 && (
+                <button className="nav-btn prev-btn" onClick={(e) => navigatePreview('prev', e)}>&#10094;</button>
+              )}
+              
+              {previewItem.type === 'video' ? (
+                <video src={import.meta.env.BASE_URL + previewItem.url.replace(/^\//, '')} controls autoPlay loop style={{ maxWidth: '100%', maxHeight: '100%' }} />
+              ) : (
+                <div 
+                  className={`zoom-wrapper ${isZoomed ? 'zoomed' : ''}`}
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  onMouseMove={handleZoomMove}
+                  onMouseLeave={() => setIsZoomed(false)}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'zoom-out' : 'zoom-in', position: 'relative' }}
+                >
+                  <img 
+                    src={import.meta.env.BASE_URL + previewItem.url.replace(/^\//, '')} 
+                    alt={previewItem.title} 
+                    className="zoom-image"
+                    style={{
+                      transformOrigin: isZoomed ? `${zoomPos.x} ${zoomPos.y}` : 'center center',
+                      transform: isZoomed ? 'scale(2.5)' : 'scale(1)',
+                      transition: isZoomed ? 'none' : 'transform 0.3s ease',
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                      position: isZoomed ? 'absolute' : 'relative',
+                      zIndex: 0
+                    }}
+                  />
+                  {isZoomed && (
+                    <img 
+                      src={import.meta.env.BASE_URL + previewItem.url.replace('/01/', '/01s/').replace('/02/', '/02s/').replace(/[^/]+(?=\?|$)/, previewItem.title).replace(/^\//, '')}
+                      alt={previewItem.title + ' high-res'} 
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                      style={{
+                        transformOrigin: `${zoomPos.x} ${zoomPos.y}`,
+                        transform: 'scale(2.5)',
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        objectFit: 'contain',
+                        position: 'relative',
+                        zIndex: 1
+                      }}
+                    />
+                  )}
+                </div>
+              )}
+
+              {currentFilteredItems.length > 1 && (
+                <button className="nav-btn next-btn" onClick={(e) => navigatePreview('next', e)}>&#10095;</button>
+              )}
             </div>
-            <div className="form-group">
-              <label>URL (e.g. /picture/1.jpg or /video/1.mp4)</label>
-              <input type="text" name="url" value={editingItem.url} onChange={handleEditChange} className="form-control" required />
-            </div>
-            <div className="form-group">
-              <label>Title</label>
-              <input type="text" name="title" value={editingItem.title} onChange={handleEditChange} className="form-control" required />
-            </div>
-            <div className="form-group">
-              <label>Description</label>
-              <textarea name="description" value={editingItem.description} onChange={handleEditChange} className="form-control" rows="3" required></textarea>
-            </div>
-            <div className="form-group" style={{ display: 'flex', gap: '1rem' }}>
-              <div style={{ flex: 1 }}>
-                <label>Date</label>
-                <input type="date" name="date" value={editingItem.date} onChange={handleEditChange} className="form-control" />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label>Location</label>
-                <input type="text" name="location" value={editingItem.location || ''} onChange={handleEditChange} className="form-control" />
-              </div>
-            </div>
-            <div className="form-group checkbox-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
-              <input 
-                type="checkbox" 
-                id="isLiked" 
-                name="isLiked" 
-                checked={!!editingItem.isLiked} 
-                onChange={e => setEditingItem(prev => ({ ...prev, isLiked: e.target.checked }))} 
-                style={{ width: '1.2rem', height: '1.2rem' }}
-              />
-              <label htmlFor="isLiked" style={{ marginBottom: 0, cursor: 'pointer' }}>👁️ 公開顯示 (Visible to public)</label>
-            </div>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-              <button type="submit" className="btn">Save Item</button>
-              <button type="button" className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     );
   }
 
-  const filteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
+  if (editingItem) {
+    const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
+    const currentFilteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+    
+    return (
+      <div className="admin-container" style={{ margin: 0, padding: 0 }}>
+        <div className="modal-backdrop" onClick={cancelEdit}>
+          <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'row' }}>
+            
+            <div className="modal-media" style={{ flex: '2', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {currentFilteredItems.length > 1 && editingItem.id && (
+                <button className="nav-btn prev-btn" onClick={(e) => navigateEdit('prev', e)}>&#10094;</button>
+              )}
+              
+              {editingItem.type === 'video' ? (
+                <video src={import.meta.env.BASE_URL + editingItem.url.replace(/^\//, '')} controls autoPlay loop style={{ maxWidth: '100%', maxHeight: '100%' }} />
+              ) : (
+                <div 
+                  className={`zoom-wrapper ${isZoomed ? 'zoomed' : ''}`}
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  onMouseMove={handleZoomMove}
+                  onMouseLeave={() => setIsZoomed(false)}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'zoom-out' : 'zoom-in', position: 'relative' }}
+                >
+                  <img 
+                    src={import.meta.env.BASE_URL + editingItem.url.replace(/^\//, '')} 
+                    alt={editingItem.title} 
+                    className="zoom-image"
+                    style={{
+                      transformOrigin: isZoomed ? `${zoomPos.x} ${zoomPos.y}` : 'center center',
+                      transform: isZoomed ? 'scale(2.5)' : 'scale(1)',
+                      transition: isZoomed ? 'none' : 'transform 0.3s ease',
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                      position: isZoomed ? 'absolute' : 'relative',
+                      zIndex: 0
+                    }}
+                  />
+                  {isZoomed && (
+                    <img 
+                      src={import.meta.env.BASE_URL + editingItem.url.replace('/01/', '/01s/').replace('/02/', '/02s/').replace(/[^/]+(?=\?|$)/, editingItem.title).replace(/^\//, '')}
+                      alt={editingItem.title + ' high-res'} 
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                      style={{
+                        transformOrigin: `${zoomPos.x} ${zoomPos.y}`,
+                        transform: 'scale(2.5)',
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        objectFit: 'contain',
+                        position: 'relative',
+                        zIndex: 1
+                      }}
+                    />
+                  )}
+                </div>
+              )}
+
+              {currentFilteredItems.length > 1 && editingItem.id && (
+                <button className="nav-btn next-btn" onClick={(e) => navigateEdit('next', e)}>&#10095;</button>
+              )}
+            </div>
+
+            <div className="modal-info" style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+              <button className="close-btn" onClick={cancelEdit}>&times;</button>
+              <div className="edit-form" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%', overflowY: 'auto', paddingRight: '1rem' }}>
+                <h3 style={{ color: 'var(--text-color)' }}>{editingItem.id ? '✏️ 編輯相片資訊' : '✨ 新增相片資訊'}</h3>
+                
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label>類型 (Type)</label>
+                    <select name="type" value={editingItem.type} onChange={handleEditChange} className="form-control">
+                      <option value="image">圖片 (Image)</option>
+                      <option value="video">影片 (Video)</option>
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label>大分類 (Category)</label>
+                    <select name="category" value={editingItem.category || 'life'} onChange={handleEditChange} className="form-control">
+                      <option value="life">生活照片</option>
+                      <option value="painting">畫畫照片</option>
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label>小分類 (Subcat)</label>
+                    <select name="subcategory" value={editingItem.subcategory || ''} onChange={handleEditChange} className="form-control">
+                      <option value="">(無)</option>
+                      {subcategories.map(sub => (
+                        <option key={sub} value={sub}>{sub}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="form-group">
+                  <label>檔案路徑 (URL)</label>
+                  <input type="text" name="url" value={editingItem.url} onChange={handleEditChange} className="form-control" required />
+                </div>
+                
+                <div className="form-group">
+                  <label>標題 (Title)</label>
+                  <input type="text" name="title" value={editingItem.title} onChange={handleEditChange} className="form-control" required />
+                </div>
+                
+                <div className="form-group">
+                  <label>說明 (Description)</label>
+                  <textarea name="description" value={editingItem.description} onChange={handleEditChange} className="form-control" rows="4" required></textarea>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label>日期 (Date)</label>
+                    <input type="date" name="date" value={editingItem.date} onChange={handleEditChange} className="form-control" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label>地點 (Location)</label>
+                    <input type="text" name="location" value={editingItem.location || ''} onChange={handleEditChange} className="form-control" />
+                  </div>
+                </div>
+
+                <div className="form-group checkbox-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+                  <input 
+                    type="checkbox" 
+                    id="isLiked" 
+                    name="isLiked" 
+                    checked={!!editingItem.isLiked} 
+                    onChange={e => {
+                      setEditingItem(prev => ({ ...prev, isLiked: e.target.checked }));
+                      setIsDirty(true);
+                    }} 
+                    style={{ width: '1.2rem', height: '1.2rem' }}
+                  />
+                  <label htmlFor="isLiked" style={{ marginBottom: 0, cursor: 'pointer' }}>👁️ 公開顯示 (Visible to public)</label>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', paddingTop: '1rem' }}>
+                  <button type="button" className="btn" onClick={(e) => saveEdit(e, true)}>💾 儲存並返回</button>
+                  <button type="button" className="btn btn-secondary" onClick={cancelEdit}>取消</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
+  const availableSubcategories = [...new Set(currentMainFilteredItems.filter(i => i.subcategory).map(i => i.subcategory))];
+  const filteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+  
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-  const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  if (isManagingCategories) {
+    return (
+      <div className="admin-container" style={{ margin: 0, padding: 0 }}>
+        <div className="modal-backdrop" onClick={() => setIsManagingCategories(false)}>
+          <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', height: 'auto', padding: '2rem', display: 'block', margin: 'auto' }}>
+            <h2 style={{ marginBottom: '1.5rem' }}>🏷️ 管理小分類</h2>
+            
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+              <input 
+                type="text" 
+                className="form-control" 
+                placeholder="新增分類名稱..." 
+                value={newSubcategoryName} 
+                onChange={(e) => setNewSubcategoryName(e.target.value)} 
+                onKeyDown={(e) => e.key === 'Enter' && handleAddSubcategory()}
+              />
+              <button className="btn" style={{ width: 'auto' }} onClick={handleAddSubcategory}>新增</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '400px', overflowY: 'auto' }}>
+              {subcategories.length === 0 && <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>尚無分類</p>}
+              {subcategories.map(sub => (
+                <div key={sub} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem', background: '#fbfbfb', border: '1px solid var(--card-border)' }}>
+                  {editingSubcategory && editingSubcategory.oldName === sub ? (
+                    <input 
+                      autoFocus
+                      type="text" 
+                      className="form-control" 
+                      style={{ padding: '0.4rem' }}
+                      value={editingSubcategory.newName} 
+                      onChange={(e) => setEditingSubcategory({ ...editingSubcategory, newName: e.target.value })}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleRenameSubcategory();
+                        if (e.key === 'Escape') setEditingSubcategory(null);
+                      }}
+                      onBlur={handleRenameSubcategory}
+                    />
+                  ) : (
+                    <span style={{ fontWeight: 'bold' }}>{sub}</span>
+                  )}
+                  
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {!editingSubcategory || editingSubcategory.oldName !== sub ? (
+                      <>
+                        <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', width: 'auto', fontSize: '0.9rem' }} onClick={() => setEditingSubcategory({ oldName: sub, newName: sub })}>✏️</button>
+                        <button className="btn btn-danger" style={{ padding: '0.2rem 0.5rem', width: 'auto', fontSize: '0.9rem' }} onClick={() => handleDeleteSubcategory(sub)}>🗑️</button>
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '2rem', textAlign: 'right' }}>
+              <button className="btn btn-secondary" style={{ width: 'auto' }} onClick={() => setIsManagingCategories(false)}>完成</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-container" style={{ alignItems: 'flex-start' }}>
       <div className="dashboard">
-        <div className="dashboard-header">
-          <h2>Manage Gallery</h2>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button className="btn" onClick={addNew}>+ Add New</button>
-            <button className="btn btn-secondary" style={{ background: '#10b981' }} onClick={handleSaveAll}>💾 Save Changes to Disk</button>
-            <button className="btn" style={{ background: '#3b82f6', color: 'white' }} onClick={handleDeploy}>🚀 發布到 GitHub (上線)</button>
+        <div className="dashboard-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <h2>Admin Dashboard</h2>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button className="btn btn-secondary" onClick={() => setIsManagingCategories(true)}>🏷️ 管理分類</button>
+              <button className="btn" onClick={addNew}>Add New Item</button>
+              <button 
+                className={`btn ${hasUnsavedChanges ? '' : 'btn-secondary'}`} 
+                style={hasUnsavedChanges ? { background: '#f59e0b', color: 'white', fontWeight: 'bold' } : { background: '#10b981' }} 
+                onClick={handleSaveAll}
+              >
+                💾 {hasUnsavedChanges ? '⚠️ 有未儲存的變更，請點此儲存' : 'Save Changes to Disk'}
+              </button>
+              <button className="btn" style={{ background: '#3b82f6', color: 'white' }} onClick={handleDeploy}>🚀 發布到 GitHub (上線)</button>
+            </div>
+          </div>
+          
+          <div style={{ width: '100%' }}>
+            <div className="filters" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+              <button className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory('all'); setCurrentPage(1); }}>All Items</button>
+              <button className={`filter-btn ${activeCategory === 'life' ? 'active' : ''}`} onClick={() => { setActiveCategory('life'); setActiveSubcategory('all'); setCurrentPage(1); }}>生活照片</button>
+              <button className={`filter-btn ${activeCategory === 'painting' ? 'active' : ''}`} onClick={() => { setActiveCategory('painting'); setActiveSubcategory('all'); setCurrentPage(1); }}>畫畫照片</button>
+            </div>
+            
+            {availableSubcategories.length > 0 && (
+              <div className="filters sub-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', background: '#f4f1eb', borderRadius: '4px' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', alignSelf: 'center', marginRight: '0.5rem' }}>小分類：</span>
+                <button 
+                  className={`filter-btn ${activeSubcategory === 'all' ? 'active' : ''}`} 
+                  style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem' }} 
+                  onClick={() => { setActiveSubcategory('all'); setCurrentPage(1); }}
+                >全部</button>
+                {availableSubcategories.map(sub => (
+                  <button 
+                    key={sub}
+                    className={`filter-btn ${activeSubcategory === sub ? 'active' : ''}`} 
+                    style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem' }} 
+                    onClick={() => { setActiveSubcategory(sub); setCurrentPage(1); }}
+                  >{sub}</button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="category-filters" style={{ marginBottom: '2rem', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
-          <button className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => handleCategoryChange('all')}>全部照片 (All)</button>
-          <button className={`filter-btn ${activeCategory === 'life' ? 'active' : ''}`} onClick={() => handleCategoryChange('life')}>生活照片 (Life)</button>
-          <button className={`filter-btn ${activeCategory === 'painting' ? 'active' : ''}`} onClick={() => handleCategoryChange('painting')}>畫畫照片 (Painting)</button>
-        </div>
-
         <div className="admin-list">
-          {paginatedItems.map((item, index) => {
+          {currentItems.map((item, index) => {
             const globalIndex = (currentPage - 1) * itemsPerPage + index;
             return (
-              <div key={item.id} className="admin-item glass">
+              <div 
+                key={item.id} 
+                className={`admin-item glass ${draggedItemIndex === item.id ? 'dragging' : ''}`}
+                draggable
+                onDragStart={(e) => handleDragStart(e, item)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, item)}
+                onDragEnd={() => setDraggedItemIndex(null)}
+                style={{ cursor: 'grab', opacity: draggedItemIndex === item.id ? 0.5 : 1 }}
+              >
               {item.type === 'video' ? (
-                <video src={import.meta.env.BASE_URL + item.url.replace(/^\//, '')} />
+                <video src={import.meta.env.BASE_URL + item.url.replace(/^\//, '')} onClick={() => setPreviewItem(item)} title="點擊放大預覽" />
               ) : (
-                <img src={import.meta.env.BASE_URL + item.url.replace(/^\//, '')} alt={item.title} />
+                <img src={import.meta.env.BASE_URL + item.url.replace(/^\//, '')} alt={item.title} onClick={() => setPreviewItem(item)} title="點擊放大預覽" />
               )}
               <div className="admin-item-info">
                 <h3 style={{ fontSize: '1.1rem' }}>
-                  <span className="tag" style={{ marginRight: '0.5rem' }}>
-                    {item.category === 'painting' ? '畫畫照片' : '生活照片'}
-                  </span>
-                  {item.title}
+                  {item.title} 
+                  {item.isLiked && <span title="公開顯示" style={{ marginLeft: '0.5rem' }}>👁️</span>}
                 </h3>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <select 
+                    value={item.category || 'life'} 
+                    onChange={(e) => handleInlineChange(item.id, 'category', e.target.value)}
+                    className="form-control"
+                    style={{ padding: '0.1rem 0.3rem', width: 'auto', fontSize: '0.85rem', background: 'rgba(255,255,255,0.8)' }}
+                  >
+                    <option value="life">生活</option>
+                    <option value="painting">畫畫</option>
+                  </select>
+                  
+                  <select 
+                    value={item.subcategory || ''} 
+                    onChange={(e) => handleInlineChange(item.id, 'subcategory', e.target.value)}
+                    className="form-control"
+                    style={{ padding: '0.1rem 0.3rem', width: 'auto', fontSize: '0.85rem', background: '#e3dfd5' }}
+                  >
+                    <option value="">(無小分類)</option>
+                    {subcategories.map(sub => (
+                      <option key={sub} value={sub}>{sub}</option>
+                    ))}
+                  </select>
+
+                  <span className="tag">{item.type}</span>
+                  {item.date && <span className="tag">📅 {item.date}</span>}
+                </div>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>{item.date} • {item.location}</p>
                 <p>{item.description}</p>
               </div>

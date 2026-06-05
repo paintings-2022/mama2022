@@ -152,7 +152,7 @@ a {
 .gallery-item img, .gallery-item video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: filter var(--transition-slow);
   filter: brightness(0.95) contrast(1.05); /* Slight vintage/artistic treatment */
 }
@@ -430,9 +430,16 @@ a {
 .admin-item img, .admin-item video {
   width: 120px;
   height: 120px;
-  object-fit: cover;
+  object-fit: contain;
   border: 1px solid var(--card-border);
   padding: 4px;
+  cursor: pointer;
+  background: var(--bg-color);
+  transition: transform var(--transition-fast);
+}
+
+.admin-item img:hover, .admin-item video:hover {
+  transform: scale(1.05);
 }
 
 .admin-item-info {
@@ -633,7 +640,8 @@ a {
 .timeline-media {
   width: 100%;
   height: 250px;
-  object-fit: cover;
+  object-fit: contain;
+  background: rgba(0,0,0,0.02); /* subtle background for transparent areas */
   border-radius: 8px;
   margin-bottom: 1rem;
 }
