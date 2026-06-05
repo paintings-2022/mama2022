@@ -146,25 +146,31 @@ function saveDataPlugin() {
           exec('git add . && git commit -m "Auto deploy from Admin" && git push', (err, stdout, stderr) => {
             if (err) {
               console.error('Error deploying:', err);
-              // if err code is 1, it might mean "nothing to commit" which is fine if they just pushed
-              const isNothingToCommit = stdout.includes('nothing to commit') || stderr.includes('nothing to commit');
+              console.error('stdout:', stdout);
+              console.error('stderr:', stderr);
+              
+              const outStr = (stdout || '') + (stderr || '');
+              // Check for nothing to commit in various languages (English, Chinese)
+              const isNothingToCommit = outStr.includes('nothing to commit') || outStr.includes('無變更可提交') || outStr.includes('沒有變更');
+              
               if (isNothingToCommit) {
                 // If there's nothing to commit, we still try to push just in case
                 exec('git push', (pushErr, pushOut, pushErrOut) => {
                   if (pushErr) {
+                    console.error('Push error:', pushErr, pushOut, pushErrOut);
                     res.statusCode = 500;
                     res.setHeader('Content-Type', 'application/json');
-                    res.end(JSON.stringify({ success: false, error: pushErr.message }));
+                    res.end(JSON.stringify({ success: false, error: pushErr.message + '\n' + pushErrOut }));
                   } else {
                     res.statusCode = 200;
                     res.setHeader('Content-Type', 'application/json');
-                    res.end(JSON.stringify({ success: true, message: 'Already up to date and pushed.' }));
+                    res.end(JSON.stringify({ success: true, message: '目前沒有新變更，且已確認同步到 GitHub。' }));
                   }
                 });
               } else {
                 res.statusCode = 500;
                 res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify({ success: false, error: err.message }));
+                res.end(JSON.stringify({ success: false, error: err.message + '\n' + outStr }));
               }
             } else {
               res.statusCode = 200;
