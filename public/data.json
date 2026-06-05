@@ -43,7 +43,8 @@
       "date": "2022-08-16",
       "location": "板橋",
       "isLiked": true,
-      "subcategory": "直1"
+      "subcategory": "直1",
+      "isFavorite": true
     },
     {
       "id": "102",

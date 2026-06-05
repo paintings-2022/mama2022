@@ -285,7 +285,12 @@ function Gallery({ data, onSave }) {
           {viewMode === 'grid' ? (
             <div className="gallery-grid">
               {filteredGallery.slice(0, visibleCount).map(item => (
-                <div key={item.id} className="gallery-item glass" onClick={() => openModal(item)}>
+                <div key={item.id} className="gallery-item glass" onClick={() => openModal(item)} style={{ position: 'relative' }}>
+                  {item.isFavorite && (
+                    <div style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '1.2rem', zIndex: 5, background: 'rgba(255,255,255,0.8)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} title="最愛">
+                      ❤️
+                    </div>
+                  )}
                   {item.type === 'video' ? (
                     <video src={import.meta.env.BASE_URL + item.url.replace(/^\//, '')} muted loop playsInline onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => e.target.pause()} />
                   ) : (
