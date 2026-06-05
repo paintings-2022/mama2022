@@ -292,7 +292,10 @@ function Gallery({ data, onSave }) {
                     <img src={import.meta.env.BASE_URL + item.url.replace(/^\//, '')} alt={item.title} loading="lazy" />
                   )}
                   <div className="item-overlay">
-                    <h3 className="item-title">{item.title}</h3>
+                    <h3 className="item-title">
+                      {item.title}
+                      {item.isFavorite && <span style={{ marginLeft: '0.5rem', color: '#ff6b6b' }} title="最愛">❤️</span>}
+                    </h3>
                     <div className="item-meta">
                       {item.date && <span>📅 {item.date}</span>}
                       {item.location && <span>📍 {item.location}</span>}
@@ -335,7 +338,10 @@ function Gallery({ data, onSave }) {
                           ) : (
                             <img className="timeline-media" src={import.meta.env.BASE_URL + item.url.replace(/^\//, '')} alt={item.title} loading="lazy" />
                           )}
-                          <h3 className="timeline-title">{item.title}</h3>
+                          <h3 className="timeline-title">
+                            {item.title}
+                            {item.isFavorite && <span style={{ marginLeft: '0.5rem', color: '#ff6b6b' }} title="最愛">❤️</span>}
+                          </h3>
                           <p className="timeline-desc">{item.description}</p>
                         </div>
                       </div>
@@ -428,10 +434,16 @@ function Gallery({ data, onSave }) {
                   <textarea name="description" value={editForm.description || ''} onChange={handleEditChange} className="form-control" rows="4" placeholder="照片說明"></textarea>
                   <input type="date" name="date" value={editForm.date || ''} onChange={handleEditChange} className="form-control" />
                   <input type="text" name="location" value={editForm.location || ''} onChange={handleEditChange} className="form-control" placeholder="地點" />
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)' }}>
-                    <input type="checkbox" name="isLiked" checked={!!editForm.isLiked} onChange={handleEditChange} style={{ width: '1.2rem', height: '1.2rem' }} />
-                    👁️ 公開顯示 (Visible)
-                  </label>
+                  <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)' }}>
+                      <input type="checkbox" name="isLiked" checked={!!editForm.isLiked} onChange={handleEditChange} style={{ width: '1.2rem', height: '1.2rem' }} />
+                      👁️ 公開顯示
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)' }}>
+                      <input type="checkbox" name="isFavorite" checked={!!editForm.isFavorite} onChange={handleEditChange} style={{ width: '1.2rem', height: '1.2rem' }} />
+                      ❤️ 標記為最愛
+                    </label>
+                  </div>
                   <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
                     <button className="btn" onClick={handleSaveModal}>💾 儲存</button>
                     <button className="btn btn-secondary" onClick={() => setIsEditing(false)}>取消</button>
@@ -439,8 +451,9 @@ function Gallery({ data, onSave }) {
                 </div>
               ) : (
                 <>
-                  <h2 style={{ paddingRight: '2rem' }}>
+                  <h2 style={{ paddingRight: '2rem', display: 'flex', alignItems: 'center' }}>
                     {selectedItem.title}
+                    {selectedItem.isFavorite && <span style={{ marginLeft: '0.8rem', fontSize: '1.5rem', color: '#ff6b6b' }} title="最愛">❤️</span>}
                   </h2>
                   <p style={{ marginTop: '1rem', lineHeight: '1.8' }}>{selectedItem.description}</p>
                   <div className="meta-tags" style={{ marginTop: 'auto', paddingTop: '2rem' }}>

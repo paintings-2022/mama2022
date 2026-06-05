@@ -88,6 +88,11 @@ function Admin({ data, onSave }) {
     setHasUnsavedChanges(true);
   };
 
+  const toggleFavorite = (id) => {
+    setItems(items.map(item => item.id === id ? { ...item, isFavorite: !item.isFavorite } : item));
+    setHasUnsavedChanges(true);
+  };
+
   const handleInlineChange = (id, field, value) => {
     setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
     setHasUnsavedChanges(true);
@@ -324,201 +329,207 @@ function Admin({ data, onSave }) {
       description: '',
       date: new Date().toISOString().split('T')[0],
       location: '',
-      isLiked: false
+      isLiked: false,
+      isFavorite: false
     });
     setIsDirty(true);
     setIsZoomed(false);
   };
 
-  if (previewItem) {
-    const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
-    const currentFilteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+  const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
+  const availableSubcategories = [...new Set(currentMainFilteredItems.filter(i => i.subcategory).map(i => i.subcategory))];
+  const filteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+  
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+  const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const renderPreviewModal = () => {
+    if (!previewItem) return null;
+    const currentFilteredItems = filteredItems;
     return (
-      <div className="admin-container" style={{ margin: 0, padding: 0 }}>
-        <div className="modal-backdrop" style={{ background: 'rgba(0,0,0,0.9)' }} onClick={() => { setPreviewItem(null); setIsZoomed(false); }}>
-          <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', background: 'transparent', boxShadow: 'none', border: 'none' }}>
-            <div className="modal-media" style={{ flex: '1', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', padding: 0 }}>
-              <button className="close-btn" style={{ top: '1rem', right: '2rem', color: 'white', zIndex: 50, background: 'rgba(255,255,255,0.2)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', border: '1px solid rgba(255,255,255,0.5)' }} onClick={() => { setPreviewItem(null); setIsZoomed(false); }}>&times;</button>
-              
-              {currentFilteredItems.length > 1 && (
-                <button className="nav-btn prev-btn" onClick={(e) => navigatePreview('prev', e)}>&#10094;</button>
-              )}
-              
-              {previewItem.type === 'video' ? (
-                <video src={import.meta.env.BASE_URL + previewItem.url.replace(/^\//, '')} controls autoPlay loop style={{ maxWidth: '100%', maxHeight: '100%' }} />
-              ) : (
-                <div 
-                  className={`zoom-wrapper ${isZoomed ? 'zoomed' : ''}`}
-                  onClick={() => setIsZoomed(!isZoomed)}
-                  onMouseMove={handleZoomMove}
-                  onMouseLeave={() => setIsZoomed(false)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'zoom-out' : 'zoom-in', position: 'relative' }}
-                >
+      <div className="modal-backdrop" style={{ background: 'rgba(0,0,0,0.9)' }} onClick={() => { setPreviewItem(null); setIsZoomed(false); }}>
+        <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', background: 'transparent', boxShadow: 'none', border: 'none' }}>
+          <div className="modal-media" style={{ flex: '1', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', padding: 0 }}>
+            <button className="close-btn" style={{ top: '1rem', right: '2rem', color: 'white', zIndex: 50, background: 'rgba(255,255,255,0.2)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', border: '1px solid rgba(255,255,255,0.5)' }} onClick={() => { setPreviewItem(null); setIsZoomed(false); }}>&times;</button>
+            
+            {currentFilteredItems.length > 1 && (
+              <button className="nav-btn prev-btn" onClick={(e) => navigatePreview('prev', e)}>&#10094;</button>
+            )}
+            
+            {previewItem.type === 'video' ? (
+              <video src={import.meta.env.BASE_URL + previewItem.url.replace(/^\//, '')} controls autoPlay loop style={{ maxWidth: '100%', maxHeight: '100%' }} />
+            ) : (
+              <div 
+                className={`zoom-wrapper ${isZoomed ? 'zoomed' : ''}`}
+                onClick={() => setIsZoomed(!isZoomed)}
+                onMouseMove={handleZoomMove}
+                onMouseLeave={() => setIsZoomed(false)}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'zoom-out' : 'zoom-in', position: 'relative' }}
+              >
+                <img 
+                  src={import.meta.env.BASE_URL + previewItem.url.replace(/^\//, '')} 
+                  alt={previewItem.title} 
+                  className="zoom-image"
+                  style={{
+                    transformOrigin: isZoomed ? `${zoomPos.x} ${zoomPos.y}` : 'center center',
+                    transform: isZoomed ? 'scale(2.5)' : 'scale(1)',
+                    transition: isZoomed ? 'none' : 'transform 0.3s ease',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'contain',
+                    position: isZoomed ? 'absolute' : 'relative',
+                    zIndex: 0
+                  }}
+                />
+                {isZoomed && (
                   <img 
-                    src={import.meta.env.BASE_URL + previewItem.url.replace(/^\//, '')} 
-                    alt={previewItem.title} 
-                    className="zoom-image"
+                    src={import.meta.env.BASE_URL + previewItem.url.replace('/01/', '/01s/').replace('/02/', '/02s/').replace(/[^/]+(?=\?|$)/, previewItem.title).replace(/^\//, '')}
+                    alt={previewItem.title + ' high-res'} 
+                    onError={(e) => { e.target.style.display = 'none'; }}
                     style={{
-                      transformOrigin: isZoomed ? `${zoomPos.x} ${zoomPos.y}` : 'center center',
-                      transform: isZoomed ? 'scale(2.5)' : 'scale(1)',
-                      transition: isZoomed ? 'none' : 'transform 0.3s ease',
+                      transformOrigin: `${zoomPos.x} ${zoomPos.y}`,
+                      transform: 'scale(2.5)',
                       maxWidth: '100%',
                       maxHeight: '100%',
                       objectFit: 'contain',
-                      position: isZoomed ? 'absolute' : 'relative',
-                      zIndex: 0
+                      position: 'relative',
+                      zIndex: 1
                     }}
                   />
-                  {isZoomed && (
-                    <img 
-                      src={import.meta.env.BASE_URL + previewItem.url.replace('/01/', '/01s/').replace('/02/', '/02s/').replace(/[^/]+(?=\?|$)/, previewItem.title).replace(/^\//, '')}
-                      alt={previewItem.title + ' high-res'} 
-                      onError={(e) => { e.target.style.display = 'none'; }}
-                      style={{
-                        transformOrigin: `${zoomPos.x} ${zoomPos.y}`,
-                        transform: 'scale(2.5)',
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                        objectFit: 'contain',
-                        position: 'relative',
-                        zIndex: 1
-                      }}
-                    />
-                  )}
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {currentFilteredItems.length > 1 && (
-                <button className="nav-btn next-btn" onClick={(e) => navigatePreview('next', e)}>&#10095;</button>
-              )}
-            </div>
+            {currentFilteredItems.length > 1 && (
+              <button className="nav-btn next-btn" onClick={(e) => navigatePreview('next', e)}>&#10095;</button>
+            )}
           </div>
         </div>
       </div>
     );
-  }
+  };
 
-  if (editingItem) {
-    const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
-    const currentFilteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+  const renderEditModal = () => {
+    if (!editingItem) return null;
+    const currentFilteredItems = filteredItems;
     
     return (
-      <div className="admin-container" style={{ margin: 0, padding: 0 }}>
-        <div className="modal-backdrop" onClick={cancelEdit}>
-          <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'row' }}>
+      <div className="modal-backdrop" onClick={cancelEdit}>
+        <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'row' }}>
+          
+          <div className="modal-media" style={{ flex: '2', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {currentFilteredItems.length > 1 && editingItem.id && (
+              <button className="nav-btn prev-btn" onClick={(e) => navigateEdit('prev', e)}>&#10094;</button>
+            )}
             
-            <div className="modal-media" style={{ flex: '2', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {currentFilteredItems.length > 1 && editingItem.id && (
-                <button className="nav-btn prev-btn" onClick={(e) => navigateEdit('prev', e)}>&#10094;</button>
-              )}
-              
-              {editingItem.type === 'video' ? (
-                <video src={import.meta.env.BASE_URL + editingItem.url.replace(/^\//, '')} controls autoPlay loop style={{ maxWidth: '100%', maxHeight: '100%' }} />
-              ) : (
-                <div 
-                  className={`zoom-wrapper ${isZoomed ? 'zoomed' : ''}`}
-                  onClick={() => setIsZoomed(!isZoomed)}
-                  onMouseMove={handleZoomMove}
-                  onMouseLeave={() => setIsZoomed(false)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'zoom-out' : 'zoom-in', position: 'relative' }}
-                >
+            {editingItem.type === 'video' ? (
+              <video src={import.meta.env.BASE_URL + editingItem.url.replace(/^\//, '')} controls autoPlay loop style={{ maxWidth: '100%', maxHeight: '100%' }} />
+            ) : (
+              <div 
+                className={`zoom-wrapper ${isZoomed ? 'zoomed' : ''}`}
+                onClick={() => setIsZoomed(!isZoomed)}
+                onMouseMove={handleZoomMove}
+                onMouseLeave={() => setIsZoomed(false)}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'zoom-out' : 'zoom-in', position: 'relative' }}
+              >
+                <img 
+                  src={import.meta.env.BASE_URL + editingItem.url.replace(/^\//, '')} 
+                  alt={editingItem.title} 
+                  className="zoom-image"
+                  style={{
+                    transformOrigin: isZoomed ? `${zoomPos.x} ${zoomPos.y}` : 'center center',
+                    transform: isZoomed ? 'scale(2.5)' : 'scale(1)',
+                    transition: isZoomed ? 'none' : 'transform 0.3s ease',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'contain',
+                    position: isZoomed ? 'absolute' : 'relative',
+                    zIndex: 0
+                  }}
+                />
+                {isZoomed && (
                   <img 
-                    src={import.meta.env.BASE_URL + editingItem.url.replace(/^\//, '')} 
-                    alt={editingItem.title} 
-                    className="zoom-image"
+                    src={import.meta.env.BASE_URL + editingItem.url.replace('/01/', '/01s/').replace('/02/', '/02s/').replace(/[^/]+(?=\?|$)/, editingItem.title).replace(/^\//, '')}
+                    alt={editingItem.title + ' high-res'} 
+                    onError={(e) => { e.target.style.display = 'none'; }}
                     style={{
-                      transformOrigin: isZoomed ? `${zoomPos.x} ${zoomPos.y}` : 'center center',
-                      transform: isZoomed ? 'scale(2.5)' : 'scale(1)',
-                      transition: isZoomed ? 'none' : 'transform 0.3s ease',
+                      transformOrigin: `${zoomPos.x} ${zoomPos.y}`,
+                      transform: 'scale(2.5)',
                       maxWidth: '100%',
                       maxHeight: '100%',
                       objectFit: 'contain',
-                      position: isZoomed ? 'absolute' : 'relative',
-                      zIndex: 0
+                      position: 'relative',
+                      zIndex: 1
                     }}
                   />
-                  {isZoomed && (
-                    <img 
-                      src={import.meta.env.BASE_URL + editingItem.url.replace('/01/', '/01s/').replace('/02/', '/02s/').replace(/[^/]+(?=\?|$)/, editingItem.title).replace(/^\//, '')}
-                      alt={editingItem.title + ' high-res'} 
-                      onError={(e) => { e.target.style.display = 'none'; }}
-                      style={{
-                        transformOrigin: `${zoomPos.x} ${zoomPos.y}`,
-                        transform: 'scale(2.5)',
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                        objectFit: 'contain',
-                        position: 'relative',
-                        zIndex: 1
-                      }}
-                    />
-                  )}
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {currentFilteredItems.length > 1 && editingItem.id && (
-                <button className="nav-btn next-btn" onClick={(e) => navigateEdit('next', e)}>&#10095;</button>
-              )}
-            </div>
+            {currentFilteredItems.length > 1 && editingItem.id && (
+              <button className="nav-btn next-btn" onClick={(e) => navigateEdit('next', e)}>&#10095;</button>
+            )}
+          </div>
 
-            <div className="modal-info" style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
-              <button className="close-btn" onClick={cancelEdit}>&times;</button>
-              <div className="edit-form" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%', overflowY: 'auto', paddingRight: '1rem' }}>
-                <h3 style={{ color: 'var(--text-color)' }}>{editingItem.id ? '✏️ 編輯相片資訊' : '✨ 新增相片資訊'}</h3>
-                
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <div style={{ flex: 1 }}>
-                    <label>類型 (Type)</label>
-                    <select name="type" value={editingItem.type} onChange={handleEditChange} className="form-control">
-                      <option value="image">圖片 (Image)</option>
-                      <option value="video">影片 (Video)</option>
-                    </select>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label>大分類 (Category)</label>
-                    <select name="category" value={editingItem.category || 'life'} onChange={handleEditChange} className="form-control">
-                      <option value="life">生活照片</option>
-                      <option value="painting">畫畫照片</option>
-                    </select>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label>小分類 (Subcat)</label>
-                    <select name="subcategory" value={editingItem.subcategory || ''} onChange={handleEditChange} className="form-control">
-                      <option value="">(無)</option>
-                      {subcategories.map(sub => (
-                        <option key={sub} value={sub}>{sub}</option>
-                      ))}
-                    </select>
-                  </div>
+          <div className="modal-info" style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+            <button className="close-btn" onClick={cancelEdit}>&times;</button>
+            <div className="edit-form" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%', overflowY: 'auto', paddingRight: '1rem' }}>
+              <h3 style={{ color: 'var(--text-color)' }}>{editingItem.id ? '✏️ 編輯相片資訊' : '✨ 新增相片資訊'}</h3>
+              
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label>類型 (Type)</label>
+                  <select name="type" value={editingItem.type} onChange={handleEditChange} className="form-control">
+                    <option value="image">圖片 (Image)</option>
+                    <option value="video">影片 (Video)</option>
+                  </select>
                 </div>
-                
-                <div className="form-group">
-                  <label>檔案路徑 (URL)</label>
-                  <input type="text" name="url" value={editingItem.url} onChange={handleEditChange} className="form-control" required />
+                <div style={{ flex: 1 }}>
+                  <label>大分類 (Category)</label>
+                  <select name="category" value={editingItem.category || 'life'} onChange={handleEditChange} className="form-control">
+                    <option value="life">生活照片</option>
+                    <option value="painting">畫畫照片</option>
+                  </select>
                 </div>
-                
-                <div className="form-group">
-                  <label>標題 (Title)</label>
-                  <input type="text" name="title" value={editingItem.title} onChange={handleEditChange} className="form-control" required />
+                <div style={{ flex: 1 }}>
+                  <label>小分類 (Subcat)</label>
+                  <select name="subcategory" value={editingItem.subcategory || ''} onChange={handleEditChange} className="form-control">
+                    <option value="">(無)</option>
+                    {subcategories.map(sub => (
+                      <option key={sub} value={sub}>{sub}</option>
+                    ))}
+                  </select>
                 </div>
-                
-                <div className="form-group">
-                  <label>說明 (Description)</label>
-                  <textarea name="description" value={editingItem.description} onChange={handleEditChange} className="form-control" rows="4" required></textarea>
+              </div>
+              
+              <div className="form-group">
+                <label>檔案路徑 (URL)</label>
+                <input type="text" name="url" value={editingItem.url} onChange={handleEditChange} className="form-control" required />
+              </div>
+              
+              <div className="form-group">
+                <label>標題 (Title)</label>
+                <input type="text" name="title" value={editingItem.title} onChange={handleEditChange} className="form-control" required />
+              </div>
+              
+              <div className="form-group">
+                <label>說明 (Description)</label>
+                <textarea name="description" value={editingItem.description} onChange={handleEditChange} className="form-control" rows="4" required></textarea>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label>日期 (Date)</label>
+                  <input type="date" name="date" value={editingItem.date} onChange={handleEditChange} className="form-control" />
                 </div>
-                
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <div style={{ flex: 1 }}>
-                    <label>日期 (Date)</label>
-                    <input type="date" name="date" value={editingItem.date} onChange={handleEditChange} className="form-control" />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label>地點 (Location)</label>
-                    <input type="text" name="location" value={editingItem.location || ''} onChange={handleEditChange} className="form-control" />
-                  </div>
+                <div style={{ flex: 1 }}>
+                  <label>地點 (Location)</label>
+                  <input type="text" name="location" value={editingItem.location || ''} onChange={handleEditChange} className="form-control" />
                 </div>
+              </div>
 
-                <div className="form-group checkbox-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+              <div className="form-group checkbox-group" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <input 
                     type="checkbox" 
                     id="isLiked" 
@@ -530,93 +541,136 @@ function Admin({ data, onSave }) {
                     }} 
                     style={{ width: '1.2rem', height: '1.2rem' }}
                   />
-                  <label htmlFor="isLiked" style={{ marginBottom: 0, cursor: 'pointer' }}>👁️ 公開顯示 (Visible to public)</label>
+                  <label htmlFor="isLiked" style={{ marginBottom: 0, cursor: 'pointer' }}>👁️ 公開顯示</label>
                 </div>
-
-                <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', paddingTop: '1rem' }}>
-                  <button type="button" className="btn" onClick={(e) => saveEdit(e, true)}>💾 儲存並返回</button>
-                  <button type="button" className="btn btn-secondary" onClick={cancelEdit}>取消</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input 
+                    type="checkbox" 
+                    id="isFavorite" 
+                    name="isFavorite" 
+                    checked={!!editingItem.isFavorite} 
+                    onChange={e => {
+                      setEditingItem(prev => ({ ...prev, isFavorite: e.target.checked }));
+                      setIsDirty(true);
+                    }} 
+                    style={{ width: '1.2rem', height: '1.2rem' }}
+                  />
+                  <label htmlFor="isFavorite" style={{ marginBottom: 0, cursor: 'pointer' }}>❤️ 標記為最愛</label>
                 </div>
               </div>
-            </div>
 
+              <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', paddingTop: '1rem' }}>
+                <button type="button" className="btn" onClick={(e) => saveEdit(e, true)}>💾 儲存並返回</button>
+                <button type="button" className="btn btn-secondary" onClick={cancelEdit}>取消</button>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     );
-  }
+  };
 
-  const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
-  const availableSubcategories = [...new Set(currentMainFilteredItems.filter(i => i.subcategory).map(i => i.subcategory))];
-  const filteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
-  
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-  const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  if (isManagingCategories) {
+  const renderCategoryModal = () => {
+    if (!isManagingCategories) return null;
     return (
-      <div className="admin-container" style={{ margin: 0, padding: 0 }}>
-        <div className="modal-backdrop" onClick={() => setIsManagingCategories(false)}>
-          <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', height: 'auto', padding: '2rem', display: 'block', margin: 'auto' }}>
-            <h2 style={{ marginBottom: '1.5rem' }}>🏷️ 管理小分類</h2>
-            
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="新增分類名稱..." 
-                value={newSubcategoryName} 
-                onChange={(e) => setNewSubcategoryName(e.target.value)} 
-                onKeyDown={(e) => e.key === 'Enter' && handleAddSubcategory()}
-              />
-              <button className="btn" style={{ width: 'auto' }} onClick={handleAddSubcategory}>新增</button>
-            </div>
+      <div className="modal-backdrop" onClick={() => setIsManagingCategories(false)}>
+        <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', height: 'auto', padding: '2rem', display: 'block', margin: 'auto' }}>
+          <h2 style={{ marginBottom: '1.5rem' }}>🏷️ 管理小分類</h2>
+          
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+            <input 
+              type="text" 
+              className="form-control" 
+              placeholder="新增分類名稱..." 
+              value={newSubcategoryName} 
+              onChange={(e) => setNewSubcategoryName(e.target.value)} 
+              onKeyDown={(e) => e.key === 'Enter' && handleAddSubcategory()}
+            />
+            <button className="btn" style={{ width: 'auto' }} onClick={handleAddSubcategory}>新增</button>
+          </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '400px', overflowY: 'auto' }}>
-              {subcategories.length === 0 && <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>尚無分類</p>}
-              {subcategories.map(sub => (
-                <div key={sub} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem', background: '#fbfbfb', border: '1px solid var(--card-border)' }}>
-                  {editingSubcategory && editingSubcategory.oldName === sub ? (
-                    <input 
-                      autoFocus
-                      type="text" 
-                      className="form-control" 
-                      style={{ padding: '0.4rem' }}
-                      value={editingSubcategory.newName} 
-                      onChange={(e) => setEditingSubcategory({ ...editingSubcategory, newName: e.target.value })}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleRenameSubcategory();
-                        if (e.key === 'Escape') setEditingSubcategory(null);
-                      }}
-                      onBlur={handleRenameSubcategory}
-                    />
-                  ) : (
-                    <span style={{ fontWeight: 'bold' }}>{sub}</span>
-                  )}
-                  
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    {!editingSubcategory || editingSubcategory.oldName !== sub ? (
-                      <>
-                        <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', width: 'auto', fontSize: '0.9rem' }} onClick={() => setEditingSubcategory({ oldName: sub, newName: sub })}>✏️</button>
-                        <button className="btn btn-danger" style={{ padding: '0.2rem 0.5rem', width: 'auto', fontSize: '0.9rem' }} onClick={() => handleDeleteSubcategory(sub)}>🗑️</button>
-                      </>
-                    ) : null}
-                  </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '400px', overflowY: 'auto' }}>
+            {subcategories.length === 0 && <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>尚無分類</p>}
+            {subcategories.map(sub => (
+              <div key={sub} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem', background: '#fbfbfb', border: '1px solid var(--card-border)' }}>
+                {editingSubcategory && editingSubcategory.oldName === sub ? (
+                  <input 
+                    autoFocus
+                    type="text" 
+                    className="form-control" 
+                    style={{ padding: '0.4rem' }}
+                    value={editingSubcategory.newName} 
+                    onChange={(e) => setEditingSubcategory({ ...editingSubcategory, newName: e.target.value })}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleRenameSubcategory();
+                      if (e.key === 'Escape') setEditingSubcategory(null);
+                    }}
+                    onBlur={handleRenameSubcategory}
+                  />
+                ) : (
+                  <span style={{ fontWeight: 'bold' }}>{sub}</span>
+                )}
+                
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {!editingSubcategory || editingSubcategory.oldName !== sub ? (
+                    <>
+                      <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', width: 'auto', fontSize: '0.9rem' }} onClick={() => setEditingSubcategory({ oldName: sub, newName: sub })}>✏️</button>
+                      <button className="btn btn-danger" style={{ padding: '0.2rem 0.5rem', width: 'auto', fontSize: '0.9rem' }} onClick={() => handleDeleteSubcategory(sub)}>🗑️</button>
+                    </>
+                  ) : null}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
-            <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-              <button className="btn btn-secondary" style={{ width: 'auto' }} onClick={() => setIsManagingCategories(false)}>完成</button>
-            </div>
+          <div style={{ marginTop: '2rem', textAlign: 'right' }}>
+            <button className="btn btn-secondary" style={{ width: 'auto' }} onClick={() => setIsManagingCategories(false)}>完成</button>
           </div>
         </div>
       </div>
     );
-  }
+  };
+
+  const paginationControls = totalPages > 1 ? (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '1rem 0' }}>
+      <button 
+        className="btn btn-secondary" 
+        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+        disabled={currentPage === 1}
+      >
+        上一頁
+      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <span>第</span>
+        <select 
+          className="form-control" 
+          value={currentPage} 
+          onChange={(e) => setCurrentPage(Number(e.target.value))}
+          style={{ width: 'auto', padding: '0.2rem 0.5rem', textAlign: 'center' }}
+        >
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <option key={page} value={page}>{page}</option>
+          ))}
+        </select>
+        <span>頁 / 共 {totalPages} 頁</span>
+      </div>
+      <button 
+        className="btn btn-secondary" 
+        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+        disabled={currentPage === totalPages}
+      >
+        下一頁
+      </button>
+    </div>
+  ) : null;
 
   return (
-    <div className="admin-container" style={{ alignItems: 'flex-start' }}>
+    <>
+      {renderPreviewModal()}
+      {renderEditModal()}
+      {renderCategoryModal()}
+      <div className="admin-container" style={{ alignItems: 'flex-start' }}>
       <div className="dashboard">
         <div className="dashboard-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
@@ -663,6 +717,8 @@ function Admin({ data, onSave }) {
           </div>
         </div>
 
+        {paginationControls}
+
         <div className="admin-list">
           {currentItems.map((item, index) => {
             const globalIndex = (currentPage - 1) * itemsPerPage + index;
@@ -686,6 +742,7 @@ function Admin({ data, onSave }) {
                 <h3 style={{ fontSize: '1.1rem' }}>
                   {item.title} 
                   {item.isLiked && <span title="公開顯示" style={{ marginLeft: '0.5rem' }}>👁️</span>}
+                  {item.isFavorite && <span title="最愛" style={{ marginLeft: '0.5rem' }}>❤️</span>}
                 </h3>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                   <select 
@@ -716,45 +773,57 @@ function Admin({ data, onSave }) {
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>{item.date} • {item.location}</p>
                 <p>{item.description}</p>
               </div>
-              <div className="admin-item-actions">
-                <button 
-                  className="btn btn-secondary" 
-                  style={{ padding: '0.4rem 0.6rem' }} 
-                  onClick={() => moveItem(item, 'top')} 
-                  disabled={globalIndex === 0}
-                  title="移至最頂部"
-                >⏫</button>
-                <button 
-                  className="btn btn-secondary" 
-                  style={{ padding: '0.4rem 0.6rem' }} 
-                  onClick={() => moveItem(item, 'up')} 
-                  disabled={globalIndex === 0}
-                  title="往上移一格"
-                >⬆️</button>
-                <button 
-                  className="btn btn-secondary" 
-                  style={{ padding: '0.4rem 0.6rem' }} 
-                  onClick={() => moveItem(item, 'down')} 
-                  disabled={globalIndex === filteredItems.length - 1}
-                  title="往下移一格"
-                >⬇️</button>
-                <button 
-                  className="btn btn-secondary" 
-                  style={{ padding: '0.4rem 0.6rem' }} 
-                  onClick={() => moveItem(item, 'bottom')} 
-                  disabled={globalIndex === filteredItems.length - 1}
-                  title="移至最底部"
-                >⏬</button>
-                <button 
-                  className="btn btn-secondary" 
-                  onClick={() => toggleLike(item.id)}
-                  title={item.isLiked ? "隱藏" : "公開顯示"}
-                  style={{ padding: '0.4rem 0.8rem', marginLeft: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  {item.isLiked ? <EyeIcon /> : <EyeOffIcon />}
-                </button>
-                <button className="btn btn-secondary" onClick={() => startEdit(item)}>Edit</button>
-                <button className="btn btn-danger" onClick={() => handleDelete(item.id)}>Delete</button>
+              <div className="admin-item-actions" style={{ flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    className="btn btn-secondary" 
+                    style={{ padding: '0.4rem 0.6rem' }} 
+                    onClick={() => moveItem(item, 'top')} 
+                    disabled={globalIndex === 0}
+                    title="移至最頂部"
+                  >⏫</button>
+                  <button 
+                    className="btn btn-secondary" 
+                    style={{ padding: '0.4rem 0.6rem' }} 
+                    onClick={() => moveItem(item, 'up')} 
+                    disabled={globalIndex === 0}
+                    title="往上移一格"
+                  >⬆️</button>
+                  <button 
+                    className="btn btn-secondary" 
+                    style={{ padding: '0.4rem 0.6rem' }} 
+                    onClick={() => moveItem(item, 'down')} 
+                    disabled={globalIndex === filteredItems.length - 1}
+                    title="往下移一格"
+                  >⬇️</button>
+                  <button 
+                    className="btn btn-secondary" 
+                    style={{ padding: '0.4rem 0.6rem' }} 
+                    onClick={() => moveItem(item, 'bottom')} 
+                    disabled={globalIndex === filteredItems.length - 1}
+                    title="移至最底部"
+                  >⏬</button>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    className="btn btn-secondary" 
+                    onClick={() => toggleLike(item.id)}
+                    title={item.isLiked ? "隱藏" : "公開顯示"}
+                    style={{ padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    {item.isLiked ? <EyeIcon /> : <EyeOffIcon />}
+                  </button>
+                  <button 
+                    className="btn btn-secondary" 
+                    onClick={() => toggleFavorite(item.id)}
+                    title={item.isFavorite ? "取消最愛" : "標記為最愛"}
+                    style={{ padding: '0.4rem 0.8rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.isFavorite ? '#e25555' : 'inherit' }}
+                  >
+                    {item.isFavorite ? '❤️' : '🤍'}
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => startEdit(item)}>Edit</button>
+                  <button className="btn btn-danger" onClick={() => handleDelete(item.id)}>Delete</button>
+                </div>
               </div>
             </div>
             );
@@ -764,27 +833,10 @@ function Admin({ data, onSave }) {
           )}
         </div>
 
-        {totalPages > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
-            <button 
-              className="btn btn-secondary" 
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              上一頁
-            </button>
-            <span>第 {currentPage} 頁 / 共 {totalPages} 頁</span>
-            <button 
-              className="btn btn-secondary" 
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              下一頁
-            </button>
-          </div>
-        )}
+        {paginationControls}
       </div>
     </div>
+    </>
   );
 }
 
