@@ -8,7 +8,7 @@ function App() {
 
   useEffect(() => {
     // Fetch initial data
-    fetch('/data.json')
+    fetch(`${import.meta.env.BASE_URL}data.json`)
       .then(res => res.json())
       .then(json => setData(json))
       .catch(err => console.error("Failed to load data.json", err));
@@ -40,17 +40,18 @@ function App() {
     <>
       <header className="header glass">
         <h1><Link to="/">My Gallery</Link></h1>
-        <nav>
-          <Link to="/admin" className="nav-link">Admin</Link>
-        </nav>
       </header>
 
-      <main>
+      <main style={{ flex: 1 }}>
         <Routes>
-          <Route path="/" element={<Gallery data={data} />} />
+          <Route path="/" element={<Gallery data={data} onSave={handleSaveData} />} />
           <Route path="/admin" element={<Admin data={data} onSave={handleSaveData} />} />
         </Routes>
       </main>
+
+      <footer style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+        <p>mama2022 Gallery v1.1 &copy; 2026</p>
+      </footer>
     </>
   );
 }

@@ -4,8 +4,15 @@ dist-ssr
 *.local
 .env
 .env.*
+*.bak
 !.env.example
 .DS_Store
 reference/
 backup/
 README_mama.md
+
+# 忽略尚未壓縮的原始大檔案目錄
+public/picture/01s/
+public/picture/02s/
+public/video/01s/
+public/video/02s/
