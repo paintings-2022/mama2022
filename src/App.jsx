@@ -8,7 +8,7 @@ function App() {
 
   useEffect(() => {
     // Fetch initial data
-    fetch(`${import.meta.env.BASE_URL}data.json`)
+    fetch(`${import.meta.env.BASE_URL}data.json?t=${new Date().getTime()}`)
       .then(res => res.json())
       .then(json => setData(json))
       .catch(err => console.error("Failed to load data.json", err));
