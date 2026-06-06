@@ -6,7 +6,7 @@ const EDIT_MODE_ENABLED = import.meta.env.DEV;
 
 function Gallery({ data, onSave }) {
   const [selectedItem, setSelectedItem] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('painting');
+  const [activeCategory, setActiveCategory] = useState('畫畫');
   const [activeSubcategory, setActiveSubcategory] = useState('all');
   const [activeStatusFilter, setActiveStatusFilter] = useState('all');
   const [visibleCount, setVisibleCount] = useState(20);
@@ -53,7 +53,7 @@ function Gallery({ data, onSave }) {
 
   const currentMainFilteredGallery = data.gallery.filter(item => {
     if (activeCategory === 'all') return item.isLiked;
-    return item.isLiked && (item.category === activeCategory || (!item.category && activeCategory === 'life'));
+    return item.isLiked && (item.category === activeCategory || (!item.category && activeCategory === '生活'));
   });
 
   const availableSubcategories = data.settings?.subcategories || ['直1', '直2', '橫1', '橫2'];
@@ -231,8 +231,15 @@ function Gallery({ data, onSave }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <button className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => handleCategoryChange('all')}>全部照片</button>
-            <button className={`filter-btn ${activeCategory === 'life' ? 'active' : ''}`} onClick={() => handleCategoryChange('life')}>生活照片</button>
-            <button className={`filter-btn ${activeCategory === 'painting' ? 'active' : ''}`} onClick={() => handleCategoryChange('painting')}>畫畫照片</button>
+          {data?.settings?.categories?.map(cat => (
+            <button 
+              key={cat}
+              className={`filter-btn ${activeCategory === cat ? 'active' : ''}`} 
+              onClick={() => handleCategoryChange(cat)}
+            >
+              {cat}
+            </button>
+          ))}
             <button 
               className="filter-btn" 
               onClick={toggleAudio}

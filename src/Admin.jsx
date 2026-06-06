@@ -21,12 +21,15 @@ function Admin({ data, onSave }) {
   const [isDirty, setIsDirty] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: '50%', y: '50%' });
-  const [activeCategory, setActiveCategory] = useState('painting');
+  const [activeCategory, setActiveCategory] = useState('畫畫');
   const [activeSubcategory, setActiveSubcategory] = useState('all');
   const [activeStatusFilter, setActiveStatusFilter] = useState('all');
   const dragRef = React.useRef({ isDragging: false, isMoved: false, startX: 0, startY: 0, zoomX: 50, zoomY: 50 });
+  const [categories, setCategories] = useState(data.settings?.categories || ['生活', '畫畫']);
   const [subcategories, setSubcategories] = useState(data.settings?.subcategories || ['直1', '直2', '橫1', '橫2']);
   const [isManagingCategories, setIsManagingCategories] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [editingCategory, setEditingCategory] = useState(null);
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
   const [editingSubcategory, setEditingSubcategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,10 +53,14 @@ function Admin({ data, onSave }) {
   // Sync state if data props change
   React.useEffect(() => {
     setItems(data.gallery || []);
+    if (data.settings) {
+      if (data.settings.categories) setCategories(data.settings.categories);
+      if (data.settings.subcategories) setSubcategories(data.settings.subcategories);
+    }
   }, [data]);
 
   const handleSaveAll = () => {
-    onSave({ gallery: items, settings: { ...data.settings, subcategories } });
+    onSave({ gallery: items, settings: { ...data.settings, categories, subcategories } });
     setHasUnsavedChanges(false);
   };
 
@@ -247,12 +254,55 @@ function Admin({ data, onSave }) {
     if (shouldClose) {
       setEditingItem(null);
     }
-    if (onSave) onSave({ ...data, gallery: newItems, settings: { ...data.settings, subcategories } });
+    if (onSave) onSave({ ...data, gallery: newItems, settings: { ...data.settings, categories, subcategories } });
+  };
+
+  
+  const saveCategories = (newCats, newItems = items) => {
+    setCategories(newCats);
+    if (onSave) onSave({ ...data, gallery: newItems, settings: { ...data.settings, categories: newCats, subcategories } });
+  };
+
+  const handleAddCategory = () => {
+    if (!newCategoryName.trim()) return;
+    if (categories.includes(newCategoryName.trim())) {
+      alert('大分類名稱已存在！');
+      return;
+    }
+    saveCategories([...categories, newCategoryName.trim()]);
+    setNewCategoryName('');
+  };
+
+  const handleDeleteCategory = (name) => {
+    if (!window.confirm(`確定要刪除大分類「${name}」嗎？這不會刪除照片，但會清除這些照片的大分類標籤。`)) return;
+    const newItems = items.map(i => i.category === name ? { ...i, category: '' } : i);
+    saveCategories(categories.filter(s => s !== name), newItems);
+    if (activeCategory === name) setActiveCategory('all');
+  };
+
+  const handleRenameCategory = () => {
+    if (!editingCategory) return;
+    if (!editingCategory.newName.trim() || editingCategory.oldName === editingCategory.newName) {
+      setEditingCategory(null);
+      return;
+    }
+    if (categories.includes(editingCategory.newName.trim())) {
+      alert('此大分類名稱已存在！');
+      setEditingCategory(null);
+      return;
+    }
+    const newName = editingCategory.newName.trim();
+    const oldName = editingCategory.oldName;
+    const newItems = items.map(i => i.category === oldName ? { ...i, category: newName } : i);
+    const newCats = categories.map(s => s === oldName ? newName : s);
+    saveCategories(newCats, newItems);
+    setEditingCategory(null);
+    if (activeCategory === oldName) setActiveCategory(newName);
   };
 
   const saveSubcategories = (newSubcats, newItems = items) => {
     setSubcategories(newSubcats);
-    if (onSave) onSave({ ...data, gallery: newItems, settings: { ...data.settings, subcategories: newSubcats } });
+    if (onSave) onSave({ ...data, gallery: newItems, settings: { ...data.settings, categories, subcategories: newSubcats } });
   };
 
   const handleAddSubcategory = () => {
@@ -366,7 +416,7 @@ function Admin({ data, onSave }) {
     setEditingItem({
       id: '',
       type: 'image',
-      category: activeCategory === 'all' ? 'life' : activeCategory,
+      category: activeCategory === 'all' ? (categories[0] || '') : activeCategory,
       subcategory: activeSubcategory === 'all' ? '' : activeSubcategory,
       url: '/picture/new.jpg',
       title: '',
@@ -549,10 +599,12 @@ function Admin({ data, onSave }) {
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label>大分類 (Category)</label>
-                  <select name="category" value={editingItem.category || 'life'} onChange={handleEditChange} className="form-control">
-                    <option value="life">生活照片</option>
-                    <option value="painting">畫畫照片</option>
+                  <label>大分類 (樓層)</label>
+                  <select name="category" value={editingItem.category || ''} onChange={handleEditChange} className="form-control">
+                    <option value="">未分類</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -700,10 +752,59 @@ function Admin({ data, onSave }) {
     if (!isManagingCategories) return null;
     return (
       <div className="modal-backdrop" onClick={() => setIsManagingCategories(false)}>
-        <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', height: 'auto', padding: '2rem', display: 'block', margin: 'auto' }}>
-          <h2 style={{ marginBottom: '1.5rem' }}>🏷️ 管理小分類</h2>
+        <div className="modal-content glass" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', height: 'auto', maxHeight: '90vh', overflowY: 'auto', padding: '1.5rem', display: 'block', margin: 'auto' }}>
           
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+          <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>🗂️ 管理大分類 (樓層)</h3>
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+            <input 
+              type="text" 
+              className="form-control" 
+              placeholder="新增大分類..." 
+              value={newCategoryName} 
+              onChange={(e) => setNewCategoryName(e.target.value)} 
+              onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+            />
+            <button className="btn" style={{ width: 'auto' }} onClick={handleAddCategory}>新增</button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '150px', overflowY: 'auto', marginBottom: '1.5rem' }}>
+            {categories.length === 0 && <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>尚無大分類</p>}
+            {categories.map(cat => (
+              <div key={cat} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem', background: '#fbfbfb', border: '1px solid var(--card-border)' }}>
+                {editingCategory && editingCategory.oldName === cat ? (
+                  <input 
+                    autoFocus
+                    type="text" 
+                    className="form-control" 
+                    style={{ padding: '0.4rem' }}
+                    value={editingCategory.newName} 
+                    onChange={(e) => setEditingCategory({ ...editingCategory, newName: e.target.value })}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleRenameCategory();
+                      if (e.key === 'Escape') setEditingCategory(null);
+                    }}
+                    onBlur={handleRenameCategory}
+                  />
+                ) : (
+                  <span style={{ fontWeight: 'bold' }}>{cat}</span>
+                )}
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {!editingCategory || editingCategory.oldName !== cat ? (
+                    <>
+                      <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', width: 'auto', fontSize: '0.9rem' }} onClick={() => setEditingCategory({ oldName: cat, newName: cat })}>✏️</button>
+                      <button className="btn btn-danger" style={{ padding: '0.2rem 0.5rem', width: 'auto', fontSize: '0.9rem' }} onClick={() => handleDeleteCategory(cat)}>🗑️</button>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div style={{ height: '1px', background: 'var(--border)', margin: '1rem 0 1rem 0' }}></div>
+
+          <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>📁 管理小分類 (展廳)</h3>
+
+          
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
             <input 
               type="text" 
               className="form-control" 
@@ -715,7 +816,7 @@ function Admin({ data, onSave }) {
             <button className="btn" style={{ width: 'auto' }} onClick={handleAddSubcategory}>新增</button>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '400px', overflowY: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '200px', overflowY: 'auto' }}>
             {subcategories.length === 0 && <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>尚無分類</p>}
             {subcategories.map(sub => (
               <div key={sub} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem', background: '#fbfbfb', border: '1px solid var(--card-border)' }}>
@@ -815,11 +916,20 @@ function Admin({ data, onSave }) {
           </div>
           
           <div style={{ width: '100%' }}>
+            
             <div className="filters" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-              <button className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory('all'); setCurrentPage(1); }}>All Items</button>
-              <button className={`filter-btn ${activeCategory === 'life' ? 'active' : ''}`} onClick={() => { setActiveCategory('life'); setActiveSubcategory('all'); setCurrentPage(1); }}>生活照片</button>
-              <button className={`filter-btn ${activeCategory === 'painting' ? 'active' : ''}`} onClick={() => { setActiveCategory('painting'); setActiveSubcategory('all'); setCurrentPage(1); }}>畫畫照片</button>
+              <button className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => { setActiveCategory('all'); setActiveSubcategory('all'); setCurrentPage(1); }}>全部照片</button>
+              {categories.map(cat => (
+                <button 
+                  key={cat}
+                  className={`filter-btn ${activeCategory === cat ? 'active' : ''}`} 
+                  onClick={() => { setActiveCategory(cat); setActiveSubcategory('all'); setCurrentPage(1); }}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
+
             
             {availableSubcategories.length > 0 && (
               <div className="filters sub-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', background: '#f4f1eb', borderRadius: '4px' }}>
@@ -897,15 +1007,18 @@ function Admin({ data, onSave }) {
                   {item.isFavorite && <span title="最愛" style={{ marginLeft: '0.5rem' }}>❤️</span>}
                 </h3>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                  <select 
-                    value={item.category || 'life'} 
-                    onChange={(e) => handleInlineChange(item.id, 'category', e.target.value)}
-                    className="form-control"
-                    style={{ padding: '0.1rem 0.3rem', width: 'auto', fontSize: '0.85rem', background: 'rgba(255,255,255,0.8)' }}
-                  >
-                    <option value="life">生活</option>
-                    <option value="painting">畫畫</option>
-                  </select>
+                  
+                    <select 
+                      value={item.category || ''} 
+                      onChange={(e) => handleInlineChange(item.id, 'category', e.target.value)}
+                      style={{ padding: '0.2rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', width: '100px' }}
+                    >
+                      <option value="">未分類</option>
+                      {categories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+
                   
                   <select 
                     value={item.subcategory || ''} 

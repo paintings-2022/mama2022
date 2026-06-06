@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Gallery from './Gallery';
 import Admin from './Admin';
+import VrGallery from './VrGallery';
 
 function App() {
   const [data, setData] = useState({ gallery: [] });
@@ -39,13 +40,19 @@ function App() {
   return (
     <>
       <header className="header glass">
-        <h1><Link to="/">美淑畫廊</Link></h1>
+        <h1 style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <Link to="/">美淑畫廊</Link>
+          <Link to="/vr" style={{ fontSize: '1rem', background: '#333', color: '#fff', padding: '0.4rem 1rem', borderRadius: '20px', textDecoration: 'none', marginLeft: 'auto' }}>
+            🥽 VR 沉浸畫廊
+          </Link>
+        </h1>
       </header>
 
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Gallery data={data} onSave={handleSaveData} />} />
           <Route path="/admin" element={<Admin data={data} onSave={handleSaveData} />} />
+          <Route path="/vr" element={<VrGallery data={data} />} />
         </Routes>
       </main>
 
