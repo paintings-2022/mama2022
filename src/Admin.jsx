@@ -381,7 +381,7 @@ function Admin({ data, onSave }) {
   };
 
   const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
-  const availableSubcategories = [...new Set(currentMainFilteredItems.filter(i => i.subcategory).map(i => i.subcategory))];
+  const availableSubcategories = subcategories;
   const filteredItems = currentMainFilteredItems.filter(i => {
     if (activeSubcategory !== 'all' && i.subcategory !== activeSubcategory) return false;
     if (activeStatusFilter === 'flattened' && !i.isFlattened) return false;
@@ -394,6 +394,7 @@ function Admin({ data, onSave }) {
   
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
   const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
 
   const renderPreviewModal = () => {
     if (!previewItem) return null;
@@ -413,9 +414,11 @@ function Admin({ data, onSave }) {
             ) : (
               <div 
                 className={`zoom-wrapper ${isZoomed ? 'zoomed' : ''}`}
-                onClick={() => setIsZoomed(!isZoomed)}
-                onMouseMove={handleZoomMove}
-                onMouseLeave={() => setIsZoomed(false)}
+                onClick={handleZoomClick}
+                onMouseDown={handleZoomMouseDown}
+                onMouseMove={handleZoomMouseMove}
+                onMouseUp={handleZoomMouseUp}
+                onMouseLeave={handleZoomMouseUp}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'zoom-out' : 'zoom-in', position: 'relative' }}
               >
                 <img 

@@ -56,7 +56,7 @@ function Gallery({ data, onSave }) {
     return item.isLiked && (item.category === activeCategory || (!item.category && activeCategory === 'life'));
   });
 
-  const availableSubcategories = [...new Set(currentMainFilteredGallery.filter(i => i.subcategory).map(i => i.subcategory))];
+  const availableSubcategories = data.settings?.subcategories || ['直1', '直2', '橫1', '橫2'];
 
   const filteredGallery = currentMainFilteredGallery.filter(i => {
     if (activeSubcategory !== 'all' && i.subcategory !== activeSubcategory) return false;

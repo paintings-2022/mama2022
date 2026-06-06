@@ -193,7 +193,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "110",
@@ -788,7 +789,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "146",
@@ -804,7 +806,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "147",
@@ -884,7 +887,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "152",
@@ -917,7 +921,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "154",
@@ -949,7 +954,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "156",
@@ -999,7 +1005,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "159",
@@ -1145,7 +1152,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "168",
@@ -1521,7 +1529,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "191",
@@ -1553,7 +1562,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "193",
@@ -1602,7 +1612,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "196",
@@ -1618,7 +1629,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "197",
@@ -1669,7 +1681,7 @@
       "isMounted": false,
       "isFramed": false,
       "isInscribed": false,
-      "isFavorite": false
+      "isFavorite": true
     },
     {
       "id": "200",
@@ -1750,7 +1762,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "205",
@@ -1766,7 +1779,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "206",
@@ -1782,7 +1796,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "207",
@@ -1932,7 +1947,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "216",
@@ -1965,7 +1981,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": true
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "218",
@@ -2014,7 +2031,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "221",
@@ -2305,7 +2323,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "239",
@@ -2535,7 +2554,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "253",
@@ -2547,7 +2567,7 @@
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
-      "subcategory": "橫1",
+      "subcategory": "橫0",
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
@@ -2600,7 +2620,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "257",
@@ -3140,7 +3161,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "290",
@@ -3405,7 +3427,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "306",
@@ -4173,7 +4196,8 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "353",
@@ -5300,7 +5324,7 @@
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
-      "subcategory": "橫1",
+      "subcategory": "橫0",
       "isFlattened": true,
       "isMounted": false,
       "isFramed": false,
@@ -5533,7 +5557,7 @@
       "isLiked": true,
       "subcategory": "直1",
       "isFavorite": true,
-      "isFlattened": false,
+      "isFlattened": true,
       "isMounted": false,
       "isFramed": false,
       "isInscribed": true
@@ -5550,8 +5574,8 @@
       "isLiked": true,
       "subcategory": "直1",
       "isFavorite": true,
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
       "isInscribed": true
     },
@@ -5566,8 +5590,8 @@
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
       "isInscribed": true
     },
@@ -5583,8 +5607,8 @@
       "isLiked": true,
       "subcategory": "直1",
       "isFavorite": true,
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
       "isInscribed": true
     },
@@ -5600,8 +5624,8 @@
       "isLiked": true,
       "subcategory": "直1",
       "isFavorite": true,
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
       "isInscribed": true
     },
@@ -5617,8 +5641,8 @@
       "isLiked": true,
       "subcategory": "直1",
       "isFavorite": true,
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
       "isInscribed": true
     },
@@ -5634,8 +5658,8 @@
       "isLiked": true,
       "subcategory": "直1",
       "isFavorite": true,
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
       "isInscribed": true
     },
@@ -5653,167 +5677,178 @@
       "isFlattened": false,
       "isMounted": false,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "443",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3375.jpg",
-      "title": "DSC_3375.JPG",
+      "title": "奇峯",
       "description": "DSC_3375.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "444",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3377.jpg",
-      "title": "DSC_3377.JPG",
+      "title": "大沼",
       "description": "DSC_3377.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": false,
+      "isFavorite": true
     },
     {
       "id": "445",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3383.jpg",
-      "title": "DSC_3383.JPG",
+      "title": "演海遠眺",
       "description": "DSC_3383.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "446",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3385.jpg",
-      "title": "DSC_3385.JPG",
+      "title": "台灣玉山",
       "description": "DSC_3385.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "447",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3389.jpg",
-      "title": "DSC_3389.JPG",
+      "title": "硫黃谷",
       "description": "DSC_3389.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "448",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3390.jpg",
-      "title": "DSC_3390.JPG",
+      "title": "印象北彊",
       "description": "DSC_3390.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "449",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3396.jpg",
-      "title": "DSC_3396.JPG",
+      "title": "黃山雲湧",
       "description": "DSC_3396.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "450",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3399.jpg",
-      "title": "DSC_3399.JPG",
+      "title": "北濱",
       "description": "DSC_3399.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "451",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3401.jpg",
-      "title": "DSC_3401.JPG",
+      "title": "都會台北",
       "description": "DSC_3401.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "452",
       "type": "image",
       "category": "painting",
       "url": "/picture/02/DSC_3407.jpg",
-      "title": "DSC_3407.JPG",
+      "title": "莊尾",
       "description": "DSC_3407.JPG",
       "date": "2026-06-02",
       "location": "",
       "isLiked": true,
       "subcategory": "直1",
-      "isFlattened": false,
-      "isMounted": false,
+      "isFlattened": true,
+      "isMounted": true,
       "isFramed": false,
-      "isInscribed": false
+      "isInscribed": true,
+      "isFavorite": true
     },
     {
       "id": "453",
