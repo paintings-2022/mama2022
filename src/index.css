@@ -127,6 +127,20 @@ a {
   border-bottom-color: var(--primary-color);
 }
 
+.sub-filters .filter-btn, .status-filters .filter-btn {
+  border-radius: 20px;
+}
+
+.sub-filters .filter-btn:hover, .status-filters .filter-btn:hover {
+  background-color: rgba(139, 115, 85, 0.1); /* light primary color */
+}
+
+.sub-filters .filter-btn.active, .status-filters .filter-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-bottom: none;
+}
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
