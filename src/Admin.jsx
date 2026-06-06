@@ -472,12 +472,19 @@ function Admin({ data, onSave }) {
           </div>
 
           <div className="modal-info" style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+            <style>
+              {`
+                .compact-edit .form-group { margin-bottom: 0.5rem; }
+                .compact-edit .form-control { padding: 0.4rem 0.6rem; font-size: 0.9rem; }
+                .compact-edit label { margin-bottom: 0.2rem; font-size: 0.8rem; }
+              `}
+            </style>
             <button className="close-btn" onClick={cancelEdit}>&times;</button>
-            <div className="edit-form" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%', overflowY: 'auto', paddingRight: '1rem' }}>
-              <h3 style={{ color: 'var(--text-color)' }}>{editingItem.id ? '✏️ 編輯相片資訊' : '✨ 新增相片資訊'}</h3>
+            <div className="edit-form compact-edit" style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', height: '100%', overflowY: 'auto', paddingRight: '1rem' }}>
+              <h3 style={{ color: 'var(--text-color)', margin: 0, fontSize: '1.2rem' }}>{editingItem.id ? '✏️ 編輯相片資訊' : '✨ 新增相片資訊'}</h3>
               
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                <div className="form-group" style={{ flex: 1 }}>
                   <label>類型 (Type)</label>
                   <select name="type" value={editingItem.type} onChange={handleEditChange} className="form-control">
                     <option value="image">圖片 (Image)</option>
@@ -518,17 +525,17 @@ function Admin({ data, onSave }) {
               </div>
               
               <div style={{ display: 'flex', gap: '1rem' }}>
-                <div style={{ flex: 1 }}>
+                <div className="form-group" style={{ flex: 1 }}>
                   <label>日期 (Date)</label>
                   <input type="date" name="date" value={editingItem.date} onChange={handleEditChange} className="form-control" />
                 </div>
-                <div style={{ flex: 1 }}>
+                <div className="form-group" style={{ flex: 1 }}>
                   <label>地點 (Location)</label>
                   <input type="text" name="location" value={editingItem.location || ''} onChange={handleEditChange} className="form-control" />
                 </div>
               </div>
 
-              <div className="form-group checkbox-group" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '1rem' }}>
+              <div className="form-group checkbox-group" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <input 
                     type="checkbox" 
@@ -559,9 +566,11 @@ function Admin({ data, onSave }) {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', paddingTop: '1rem' }}>
-                <button type="button" className="btn" onClick={(e) => saveEdit(e, true)}>💾 儲存並返回</button>
-                <button type="button" className="btn btn-secondary" onClick={cancelEdit}>取消</button>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', paddingTop: '0.5rem' }}>
+                <button type="button" className="btn" onClick={(e) => saveEdit(e, false)} disabled={!isDirty}>
+                  💾 儲存 {isDirty ? '' : '(已儲存)'}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={cancelEdit}>關閉</button>
               </div>
             </div>
           </div>
