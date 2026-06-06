@@ -23,6 +23,8 @@ function Admin({ data, onSave }) {
   const [zoomPos, setZoomPos] = useState({ x: '50%', y: '50%' });
   const [activeCategory, setActiveCategory] = useState('painting');
   const [activeSubcategory, setActiveSubcategory] = useState('all');
+  const [activeStatusFilter, setActiveStatusFilter] = useState('all');
+  const dragRef = React.useRef({ isDragging: false, isMoved: false, startX: 0, startY: 0, zoomX: 50, zoomY: 50 });
   const [subcategories, setSubcategories] = useState(data.settings?.subcategories || ['直1', '直2', '橫1', '橫2']);
   const [isManagingCategories, setIsManagingCategories] = useState(false);
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
@@ -30,6 +32,7 @@ function Admin({ data, onSave }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [draggedItemIndex, setDraggedItemIndex] = useState(null);
+  const [adminViewMode, setAdminViewMode] = useState('list');
   const itemsPerPage = 20;
 
   if (import.meta.env.PROD) {
@@ -181,12 +184,53 @@ function Admin({ data, onSave }) {
     }
   };
 
-  const handleZoomMove = (e) => {
-    if (!isZoomed) return;
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    setZoomPos({ x: `${x}%`, y: `${y}%` });
+  const handleZoomMouseDown = (e) => {
+    if (isZoomed) {
+      dragRef.current = {
+        isDragging: true,
+        isMoved: false,
+        startX: e.clientX,
+        startY: e.clientY,
+        zoomX: parseFloat(zoomPos.x) || 50,
+        zoomY: parseFloat(zoomPos.y) || 50,
+      };
+      e.preventDefault();
+    }
+  };
+
+  const handleZoomMouseMove = (e) => {
+    if (isZoomed && dragRef.current.isDragging) {
+      dragRef.current.isMoved = true;
+      const dx = e.clientX - dragRef.current.startX;
+      const dy = e.clientY - dragRef.current.startY;
+      const { width, height } = e.currentTarget.getBoundingClientRect();
+      const scale = 2.5;
+      
+      const newX = dragRef.current.zoomX - (dx / width) * 100 / scale;
+      const newY = dragRef.current.zoomY - (dy / height) * 100 / scale;
+      
+      setZoomPos({ x: `${Math.max(0, Math.min(100, newX))}%`, y: `${Math.max(0, Math.min(100, newY))}%` });
+    }
+  };
+
+  const handleZoomMouseUp = () => {
+    dragRef.current.isDragging = false;
+  };
+
+  const handleZoomClick = (e) => {
+    if (dragRef.current.isMoved) {
+      dragRef.current.isMoved = false;
+      return;
+    }
+    if (!isZoomed) {
+      const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - left) / width) * 100;
+      const y = ((e.clientY - top) / height) * 100;
+      setZoomPos({ x: `${x}%`, y: `${y}%` });
+      setIsZoomed(true);
+    } else {
+      setIsZoomed(false);
+    }
   };
 
   const saveEdit = (e, shouldClose = true) => {
@@ -338,7 +382,15 @@ function Admin({ data, onSave }) {
 
   const currentMainFilteredItems = items.filter(i => activeCategory === 'all' || i.category === activeCategory);
   const availableSubcategories = [...new Set(currentMainFilteredItems.filter(i => i.subcategory).map(i => i.subcategory))];
-  const filteredItems = currentMainFilteredItems.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+  const filteredItems = currentMainFilteredItems.filter(i => {
+    if (activeSubcategory !== 'all' && i.subcategory !== activeSubcategory) return false;
+    if (activeStatusFilter === 'flattened' && !i.isFlattened) return false;
+    if (activeStatusFilter === 'mounted' && !i.isMounted) return false;
+    if (activeStatusFilter === 'framed' && !i.isFramed) return false;
+    if (activeStatusFilter === 'inscribed' && !i.isInscribed) return false;
+    if (activeStatusFilter === 'favorite' && !i.isFavorite) return false;
+    return true;
+  });
   
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
   const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -427,10 +479,12 @@ function Admin({ data, onSave }) {
             ) : (
               <div 
                 className={`zoom-wrapper ${isZoomed ? 'zoomed' : ''}`}
-                onClick={() => setIsZoomed(!isZoomed)}
-                onMouseMove={handleZoomMove}
-                onMouseLeave={() => setIsZoomed(false)}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'zoom-out' : 'zoom-in', position: 'relative' }}
+                onClick={handleZoomClick}
+                onMouseDown={handleZoomMouseDown}
+                onMouseMove={handleZoomMouseMove}
+                onMouseUp={handleZoomMouseUp}
+                onMouseLeave={handleZoomMouseUp}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', overflow: 'hidden', cursor: isZoomed ? 'grab' : 'zoom-in', position: 'relative' }}
               >
                 <img 
                   src={import.meta.env.BASE_URL + editingItem.url.replace(/^\//, '')} 
@@ -563,6 +617,65 @@ function Admin({ data, onSave }) {
                     style={{ width: '1.2rem', height: '1.2rem' }}
                   />
                   <label htmlFor="isFavorite" style={{ marginBottom: 0, cursor: 'pointer' }}>❤️ 標記為最愛</label>
+                </div>
+              </div>
+
+              <div className="form-group checkbox-group" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input 
+                    type="checkbox" 
+                    id="isFlattened" 
+                    name="isFlattened" 
+                    checked={!!editingItem.isFlattened} 
+                    onChange={e => {
+                      setEditingItem(prev => ({ ...prev, isFlattened: e.target.checked }));
+                      setIsDirty(true);
+                    }} 
+                    style={{ width: '1.2rem', height: '1.2rem' }}
+                  />
+                  <label htmlFor="isFlattened" style={{ marginBottom: 0, cursor: 'pointer' }}>🗜️ 已拓平</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input 
+                    type="checkbox" 
+                    id="isMounted" 
+                    name="isMounted" 
+                    checked={!!editingItem.isMounted} 
+                    onChange={e => {
+                      setEditingItem(prev => ({ ...prev, isMounted: e.target.checked }));
+                      setIsDirty(true);
+                    }} 
+                    style={{ width: '1.2rem', height: '1.2rem' }}
+                  />
+                  <label htmlFor="isMounted" style={{ marginBottom: 0, cursor: 'pointer' }}>📜 已裱褙</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input 
+                    type="checkbox" 
+                    id="isFramed" 
+                    name="isFramed" 
+                    checked={!!editingItem.isFramed} 
+                    onChange={e => {
+                      setEditingItem(prev => ({ ...prev, isFramed: e.target.checked }));
+                      setIsDirty(true);
+                    }} 
+                    style={{ width: '1.2rem', height: '1.2rem' }}
+                  />
+                  <label htmlFor="isFramed" style={{ marginBottom: 0, cursor: 'pointer' }}>🖼️ 已裝框</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input 
+                    type="checkbox" 
+                    id="isInscribed" 
+                    name="isInscribed" 
+                    checked={!!editingItem.isInscribed} 
+                    onChange={e => {
+                      setEditingItem(prev => ({ ...prev, isInscribed: e.target.checked }));
+                      setIsDirty(true);
+                    }} 
+                    style={{ width: '1.2rem', height: '1.2rem' }}
+                  />
+                  <label htmlFor="isInscribed" style={{ marginBottom: 0, cursor: 'pointer' }}>✍️ 題字</label>
                 </div>
               </div>
 
@@ -723,12 +836,39 @@ function Admin({ data, onSave }) {
                 ))}
               </div>
             )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+              <div className="filters status-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', marginTop: '0.5rem', background: '#eef2ff', borderRadius: '4px' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', alignSelf: 'center', marginRight: '0.5rem' }}>狀態篩選：</span>
+                <button className={`filter-btn ${activeStatusFilter === 'all' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem' }} onClick={() => { setActiveStatusFilter('all'); setCurrentPage(1); }}>全部</button>
+                <button className={`filter-btn ${activeStatusFilter === 'flattened' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem' }} onClick={() => { setActiveStatusFilter('flattened'); setCurrentPage(1); }}>🗜️ 拓平</button>
+                <button className={`filter-btn ${activeStatusFilter === 'mounted' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem' }} onClick={() => { setActiveStatusFilter('mounted'); setCurrentPage(1); }}>📜 裱褙</button>
+                <button className={`filter-btn ${activeStatusFilter === 'framed' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem' }} onClick={() => { setActiveStatusFilter('framed'); setCurrentPage(1); }}>🖼️ 裝框</button>
+                <button className={`filter-btn ${activeStatusFilter === 'inscribed' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem' }} onClick={() => { setActiveStatusFilter('inscribed'); setCurrentPage(1); }}>✍️ 題字</button>
+                <button className={`filter-btn ${activeStatusFilter === 'favorite' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem' }} onClick={() => { setActiveStatusFilter('favorite'); setCurrentPage(1); }}>❤️ 最愛</button>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button 
+                  className="filter-btn" 
+                  style={{ padding: '0.4rem 1rem', background: adminViewMode === 'list' ? 'var(--primary-color)' : 'transparent', color: adminViewMode === 'list' ? 'white' : 'var(--text-color)', border: '1px solid var(--primary-color)', borderRadius: '4px' }}
+                  onClick={() => setAdminViewMode('list')}
+                >
+                  📋 列表模式
+                </button>
+                <button 
+                  className="filter-btn" 
+                  style={{ padding: '0.4rem 1rem', background: adminViewMode === 'grid' ? 'var(--primary-color)' : 'transparent', color: adminViewMode === 'grid' ? 'white' : 'var(--text-color)', border: '1px solid var(--primary-color)', borderRadius: '4px' }}
+                  onClick={() => setAdminViewMode('grid')}
+                >
+                  🔲 網格排序
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         {paginationControls}
 
-        <div className="admin-list">
+        <div className={adminViewMode === 'grid' ? 'admin-grid' : 'admin-list'}>
           {currentItems.map((item, index) => {
             const globalIndex = (currentPage - 1) * itemsPerPage + index;
             return (
@@ -778,12 +918,21 @@ function Admin({ data, onSave }) {
 
                   <span className="tag">{item.type}</span>
                   {item.date && <span className="tag">📅 {item.date}</span>}
+                  {item.isFlattened && <span className="tag" style={{ background: '#e0f2fe', color: '#0369a1', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem' }}>🗜️ 拓平</span>}
+                  {item.isMounted && <span className="tag" style={{ background: '#fef3c7', color: '#b45309', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem' }}>📜 裱褙</span>}
+                  {item.isFramed && <span className="tag" style={{ background: '#f3e8ff', color: '#7e22ce', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem' }}>🖼️ 裝框</span>}
+                  {item.isInscribed && <span className="tag" style={{ background: '#dcfce7', color: '#15803d', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem' }}>✍️ 題字</span>}
                 </div>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>{item.date} • {item.location}</p>
-                <p>{item.description}</p>
+                {adminViewMode === 'list' && (
+                  <>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>{item.date} • {item.location}</p>
+                    <p>{item.description}</p>
+                  </>
+                )}
               </div>
-              <div className="admin-item-actions" style={{ flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <div className="admin-item-actions" style={{ flexDirection: adminViewMode === 'grid' ? 'row' : 'column', gap: '0.5rem', marginTop: adminViewMode === 'grid' ? 'auto' : 0 }}>
+                {adminViewMode === 'list' && (
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                   <button 
                     className="btn btn-secondary" 
                     style={{ padding: '0.4rem 0.6rem' }} 
@@ -813,6 +962,7 @@ function Admin({ data, onSave }) {
                     title="移至最底部"
                   >⏬</button>
                 </div>
+                )}
                 <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                   <button 
                     className="btn btn-secondary" 

@@ -39,7 +39,7 @@ function App() {
   return (
     <>
       <header className="header glass">
-        <h1><Link to="/">My Gallery</Link></h1>
+        <h1><Link to="/">美淑畫廊</Link></h1>
       </header>
 
       <main style={{ flex: 1 }}>

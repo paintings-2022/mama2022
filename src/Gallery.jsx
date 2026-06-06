@@ -8,6 +8,7 @@ function Gallery({ data, onSave }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeCategory, setActiveCategory] = useState('painting');
   const [activeSubcategory, setActiveSubcategory] = useState('all');
+  const [activeStatusFilter, setActiveStatusFilter] = useState('all');
   const [visibleCount, setVisibleCount] = useState(20);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const audioRef = useRef(null);
@@ -57,7 +58,15 @@ function Gallery({ data, onSave }) {
 
   const availableSubcategories = [...new Set(currentMainFilteredGallery.filter(i => i.subcategory).map(i => i.subcategory))];
 
-  const filteredGallery = currentMainFilteredGallery.filter(i => activeSubcategory === 'all' || i.subcategory === activeSubcategory);
+  const filteredGallery = currentMainFilteredGallery.filter(i => {
+    if (activeSubcategory !== 'all' && i.subcategory !== activeSubcategory) return false;
+    if (activeStatusFilter === 'flattened' && !i.isFlattened) return false;
+    if (activeStatusFilter === 'mounted' && !i.isMounted) return false;
+    if (activeStatusFilter === 'framed' && !i.isFramed) return false;
+    if (activeStatusFilter === 'inscribed' && !i.isInscribed) return false;
+    if (activeStatusFilter === 'favorite' && !i.isFavorite) return false;
+    return true;
+  });
 
   const currentIndex = selectedItem ? filteredGallery.findIndex(i => i.id === selectedItem.id) : -1;
 
@@ -251,6 +260,15 @@ function Gallery({ data, onSave }) {
               ))}
             </div>
           )}
+          <div className="filters status-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.3rem 0.5rem', background: 'var(--card-bg)', borderRadius: '20px', border: '1px solid var(--card-border)', width: 'fit-content' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', alignSelf: 'center', marginLeft: '0.5rem', marginRight: '0.5rem' }}>狀態：</span>
+            <button className={`filter-btn ${activeStatusFilter === 'all' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('all'); setVisibleCount(20); }}>全部</button>
+            <button className={`filter-btn ${activeStatusFilter === 'flattened' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('flattened'); setVisibleCount(20); }}>🗜️ 拓平</button>
+            <button className={`filter-btn ${activeStatusFilter === 'mounted' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('mounted'); setVisibleCount(20); }}>📜 裱褙</button>
+            <button className={`filter-btn ${activeStatusFilter === 'framed' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('framed'); setVisibleCount(20); }}>🖼️ 裝框</button>
+            <button className={`filter-btn ${activeStatusFilter === 'inscribed' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('inscribed'); setVisibleCount(20); }}>✍️ 題字</button>
+            <button className={`filter-btn ${activeStatusFilter === 'favorite' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('favorite'); setVisibleCount(20); }}>❤️ 最愛</button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', background: 'var(--card-bg)', padding: '0.3rem', borderRadius: '20px', border: '1px solid var(--card-border)' }}>
@@ -301,7 +319,11 @@ function Gallery({ data, onSave }) {
                       {item.title}
                       {item.isFavorite && <span style={{ marginLeft: '0.5rem', color: '#ff6b6b' }} title="最愛">❤️</span>}
                     </h3>
-                    <div className="item-meta">
+                    <div className="item-meta" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '0.2rem' }}>
+                      {item.isFlattened && <span className="tag" style={{ background: 'rgba(224, 242, 254, 0.9)', color: '#0369a1', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.75rem', border: 'none' }}>🗜️ 拓平</span>}
+                      {item.isMounted && <span className="tag" style={{ background: 'rgba(254, 243, 199, 0.9)', color: '#b45309', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.75rem', border: 'none' }}>📜 裱褙</span>}
+                      {item.isFramed && <span className="tag" style={{ background: 'rgba(243, 232, 255, 0.9)', color: '#7e22ce', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.75rem', border: 'none' }}>🖼️ 裝框</span>}
+                      {item.isInscribed && <span className="tag" style={{ background: 'rgba(220, 252, 231, 0.9)', color: '#15803d', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.75rem', border: 'none' }}>✍️ 題字</span>}
                       {item.date && <span>📅 {item.date}</span>}
                       {item.location && <span>📍 {item.location}</span>}
                     </div>
@@ -347,6 +369,12 @@ function Gallery({ data, onSave }) {
                             {item.title}
                             {item.isFavorite && <span style={{ marginLeft: '0.5rem', color: '#ff6b6b' }} title="最愛">❤️</span>}
                           </h3>
+                          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem', marginBottom: '0.5rem' }}>
+                            {item.isFlattened && <span className="tag" style={{ background: '#e0f2fe', color: '#0369a1', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem', border: 'none' }}>🗜️ 拓平</span>}
+                            {item.isMounted && <span className="tag" style={{ background: '#fef3c7', color: '#b45309', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem', border: 'none' }}>📜 裱褙</span>}
+                            {item.isFramed && <span className="tag" style={{ background: '#f3e8ff', color: '#7e22ce', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem', border: 'none' }}>🖼️ 裝框</span>}
+                            {item.isInscribed && <span className="tag" style={{ background: '#dcfce7', color: '#15803d', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem', border: 'none' }}>✍️ 題字</span>}
+                          </div>
                           <p className="timeline-desc">{item.description}</p>
                         </div>
                       </div>
@@ -446,7 +474,25 @@ function Gallery({ data, onSave }) {
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)' }}>
                       <input type="checkbox" name="isFavorite" checked={!!editForm.isFavorite} onChange={handleEditChange} style={{ width: '1.2rem', height: '1.2rem' }} />
-                      ❤️ 標記為最愛
+                      ❤️ 最愛
+                    </label>
+                  </div>
+                  <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)' }}>
+                      <input type="checkbox" name="isFlattened" checked={!!editForm.isFlattened} onChange={handleEditChange} style={{ width: '1.2rem', height: '1.2rem' }} />
+                      🗜️ 拓平
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)' }}>
+                      <input type="checkbox" name="isMounted" checked={!!editForm.isMounted} onChange={handleEditChange} style={{ width: '1.2rem', height: '1.2rem' }} />
+                      📜 裱褙
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)' }}>
+                      <input type="checkbox" name="isFramed" checked={!!editForm.isFramed} onChange={handleEditChange} style={{ width: '1.2rem', height: '1.2rem' }} />
+                      🖼️ 裝框
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-color)' }}>
+                      <input type="checkbox" name="isInscribed" checked={!!editForm.isInscribed} onChange={handleEditChange} style={{ width: '1.2rem', height: '1.2rem' }} />
+                      ✍️ 題字
                     </label>
                   </div>
                   <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
@@ -464,6 +510,10 @@ function Gallery({ data, onSave }) {
                   <div className="meta-tags" style={{ marginTop: 'auto', paddingTop: '2rem' }}>
                     {selectedItem.date && <span className="tag">📅 {selectedItem.date}</span>}
                     {selectedItem.location && <span className="tag">📍 {selectedItem.location}</span>}
+                    {selectedItem.isFlattened && <span className="tag" style={{ background: '#e0f2fe', color: '#0369a1', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem', border: 'none' }}>🗜️ 拓平</span>}
+                    {selectedItem.isMounted && <span className="tag" style={{ background: '#fef3c7', color: '#b45309', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem', border: 'none' }}>📜 裱褙</span>}
+                    {selectedItem.isFramed && <span className="tag" style={{ background: '#f3e8ff', color: '#7e22ce', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem', border: 'none' }}>🖼️ 裝框</span>}
+                    {selectedItem.isInscribed && <span className="tag" style={{ background: '#dcfce7', color: '#15803d', padding: '0.1rem 0.4rem', borderRadius: '4px', fontStyle: 'normal', fontSize: '0.8rem', border: 'none' }}>✍️ 題字</span>}
                   </div>
                   {EDIT_MODE_ENABLED && !isCropping && (
                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
