@@ -57,7 +57,7 @@ function App() {
       </main>
 
       <footer style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-        <p>mama2022 Gallery v1.1 &copy; 2026</p>
+        <p>mama2022 Gallery v1.7.0 &copy; 2026</p>
       </footer>
     </>
   );
