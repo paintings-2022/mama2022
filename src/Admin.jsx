@@ -859,9 +859,10 @@ function Admin({ data, onSave }) {
   };
 
   const paginationControls = totalPages > 1 ? (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '1rem 0' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '1rem 0', flexWrap: 'wrap' }}>
       <button 
         className="btn btn-secondary" 
+        style={{ width: 'auto' }}
         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
         disabled={currentPage === 1}
       >
@@ -883,6 +884,7 @@ function Admin({ data, onSave }) {
       </div>
       <button 
         className="btn btn-secondary" 
+        style={{ width: 'auto' }}
         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
         disabled={currentPage === totalPages}
       >

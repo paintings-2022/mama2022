@@ -289,7 +289,7 @@ function Gallery({ data, onSave }) {
   return (
     <div className="gallery-container">
       <audio ref={audioRef} loop src={musicUrl} />
-            <div className="filters" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div className="filters" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <button className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`} onClick={() => handleCategoryChange('all')}>全部照片</button>
@@ -311,52 +311,33 @@ function Gallery({ data, onSave }) {
             </button>
           </div>
           
-          <div style={{ display: 'flex', gap: '0.5rem', background: 'var(--card-bg)', padding: '0.3rem', borderRadius: '20px', border: '1px solid var(--card-border)' }}>
-            <button 
-              className="filter-btn" 
-              style={{ margin: 0, padding: '0.4rem 1rem', background: viewMode === 'grid' ? 'var(--primary-color)' : 'transparent', color: viewMode === 'grid' ? 'white' : 'var(--text-color)', border: 'none' }}
-              onClick={() => setViewMode('grid')}
-            >
-              🔲 格子
-            </button>
-            <button 
-              className="filter-btn" 
-              style={{ margin: 0, padding: '0.4rem 1rem', background: viewMode === 'timeline' ? 'var(--primary-color)' : 'transparent', color: viewMode === 'timeline' ? 'white' : 'var(--text-color)', border: 'none' }}
-              onClick={() => setViewMode('timeline')}
-            >
-              ⏳ 時間軸
-            </button>
-          </div>
-        </div>
-
-        {availableSubcategories.length > 0 && (
-          <div className="filters sub-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.3rem 0.5rem', background: 'var(--card-bg)', borderRadius: '20px', border: '1px solid var(--card-border)', width: 'fit-content' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', alignSelf: 'center', marginLeft: '0.5rem', marginRight: '0.5rem' }}>小分類：</span>
-            <button 
-              className={`filter-btn ${activeSubcategory === 'all' ? 'active' : ''}`} 
-              style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} 
-              onClick={() => { setActiveSubcategory('all'); setCurrentPage(1); }}
-            >全部</button>
-            {availableSubcategories.map(sub => (
+          {availableSubcategories.length > 0 && (
+            <div className="filters sub-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.3rem 0.5rem', background: 'var(--card-bg)', borderRadius: '20px', border: '1px solid var(--card-border)', width: 'fit-content' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', alignSelf: 'center', marginLeft: '0.5rem', marginRight: '0.5rem' }}>小分類：</span>
               <button 
-                key={sub}
-                className={`filter-btn ${activeSubcategory === sub ? 'active' : ''}`} 
+                className={`filter-btn ${activeSubcategory === 'all' ? 'active' : ''}`} 
                 style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} 
-                onClick={() => { setActiveSubcategory(sub); setCurrentPage(1); }}
-              >{sub}</button>
-            ))}
+                onClick={() => { setActiveSubcategory('all'); setCurrentPage(1); }}
+              >全部</button>
+              {availableSubcategories.map(sub => (
+                <button 
+                  key={sub}
+                  className={`filter-btn ${activeSubcategory === sub ? 'active' : ''}`} 
+                  style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} 
+                  onClick={() => { setActiveSubcategory(sub); setCurrentPage(1); }}
+                >{sub}</button>
+              ))}
+            </div>
+          )}
+          <div className="filters status-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.3rem 0.5rem', background: 'var(--card-bg)', borderRadius: '20px', border: '1px solid var(--card-border)', width: 'fit-content' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', alignSelf: 'center', marginLeft: '0.5rem', marginRight: '0.5rem' }}>狀態：</span>
+            <button className={`filter-btn ${activeStatusFilter === 'all' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('all'); setCurrentPage(1); }}>全部</button>
+            <button className={`filter-btn ${activeStatusFilter === 'flattened' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('flattened'); setCurrentPage(1); }}>🗜️ 拓平</button>
+            <button className={`filter-btn ${activeStatusFilter === 'mounted' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('mounted'); setCurrentPage(1); }}>📜 裱褙</button>
+            <button className={`filter-btn ${activeStatusFilter === 'framed' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('framed'); setCurrentPage(1); }}>🖼️ 裝框</button>
+            <button className={`filter-btn ${activeStatusFilter === 'inscribed' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('inscribed'); setCurrentPage(1); }}>✍️ 題字</button>
+            <button className={`filter-btn ${activeStatusFilter === 'favorite' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('favorite'); setCurrentPage(1); }}>❤️ 最愛</button>
           </div>
-        )}
-        
-        <div className="filters status-filters" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.3rem 0.5rem', background: 'var(--card-bg)', borderRadius: '20px', border: '1px solid var(--card-border)', width: 'fit-content' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', alignSelf: 'center', marginLeft: '0.5rem', marginRight: '0.5rem' }}>狀態：</span>
-          <button className={`filter-btn ${activeStatusFilter === 'all' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('all'); setCurrentPage(1); }}>全部</button>
-          <button className={`filter-btn ${activeStatusFilter === 'flattened' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('flattened'); setCurrentPage(1); }}>🗜️ 拓平</button>
-          <button className={`filter-btn ${activeStatusFilter === 'mounted' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('mounted'); setCurrentPage(1); }}>📜 裱褙</button>
-          <button className={`filter-btn ${activeStatusFilter === 'framed' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('framed'); setCurrentPage(1); }}>🖼️ 裝框</button>
-          <button className={`filter-btn ${activeStatusFilter === 'inscribed' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('inscribed'); setCurrentPage(1); }}>✍️ 題字</button>
-          <button className={`filter-btn ${activeStatusFilter === 'favorite' ? 'active' : ''}`} style={{ padding: '0.2rem 0.8rem', fontSize: '0.9rem', margin: 0, border: 'none' }} onClick={() => { setActiveStatusFilter('favorite'); setCurrentPage(1); }}>❤️ 最愛</button>
-        </div>
       </div>
 
       {totalPages > 1 && paginationControls}
